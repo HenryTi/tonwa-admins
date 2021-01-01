@@ -38,7 +38,7 @@ export class VHome extends VPage<CHome> {
                 <List items={items} item={item} />
             </div>
         }
-        return <Page header="开始" logout={logout}>
+        return <Page header="同花管理员" logout={logout}>
             {list(accUnits, '小号')}
             {list(devUnits, '开发号')}
             {list(bothUnits, '双号')}
