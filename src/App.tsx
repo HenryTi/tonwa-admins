@@ -1,7 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
+import { nav, NavView, start } from 'tonva';
+import { CHome } from './Home';
 import './App.css';
+import { CApp } from 'UqApp/CApp';
 
+/*
 function App() {
   return (
     <div className="App">
@@ -21,6 +25,17 @@ function App() {
       </header>
     </div>
   );
+}
+*/
+
+function App() {
+    let onLogined = async () => {
+		nav.clear();
+		await start(CApp, undefined);
+        //let cAdmin = new CHome({});
+        //await cAdmin.start();
+    }
+	return (<NavView onLogined={onLogined} />);
 }
 
 export default App;

@@ -1,0 +1,17 @@
+.va-lmr {
+    display: flex;
+    flex-direction: row;
+}
+
+.va-lmr > div {
+    flex: 1;
+    /*margin: 0 15px;*/
+}
+
+.va-lmr > header {
+    display: flex;
+}
+
+.va-lmr > footer {
+    display: flex;
+}
