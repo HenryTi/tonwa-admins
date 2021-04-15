@@ -27,6 +27,12 @@ export interface SheetSaveReturnV<V> {
 export interface SheetSaveReturn extends SheetSaveReturnV<any> {
 }
 
+interface GetSheetReturn<M> {
+	brief: any;
+	data: M;
+	flows: any[];
+}
+
 export class UqSheet<M, V> extends Entity {
     get typeName(): string { return 'sheet';}
 	states: SheetState[];
@@ -82,7 +88,7 @@ export class UqSheet<M, V> extends Entity {
     async actionDebugDirect(id:number, flow:number, state:string, action:string) {
         return await new ActionDirectCaller(this, {id:id, flow:flow, state:state, action:action}).request();
     }
-    private unpack(data:any):{brief:string, data:M, flows:any[]} {
+    private unpack(data:any):GetSheetReturn<M> {
         //if (this.schema === undefined) await this.loadSchema();
         let ret = data[0];
         let brief = ret[0];
@@ -94,7 +100,7 @@ export class UqSheet<M, V> extends Entity {
             flows: flows,
         }
     }
-    async getSheet(id:number):Promise<{brief:string, data:M, flows:any[]}> {
+    async getSheet(id:number):Promise<GetSheetReturn<M>> {
         /*
         await this.loadSchema();
         let ret = await this.uqApi.getSheet(this.name, id);
@@ -103,7 +109,7 @@ export class UqSheet<M, V> extends Entity {
         if (ret[0].length === 0) return await this.getArchive(id);
         return this.unpack(ret);
     }
-    async getArchive(id:number):Promise<{brief:string, data:M, flows:any[]}> {
+    async getArchive(id:number):Promise<GetSheetReturn<M>> {
         /*
         await this.loadSchema();
         let ret = await this.uqApi.sheetArchive(this.name, id)

@@ -15,7 +15,8 @@ export const ArrComponent = observer((
     let data = parentContext.initData[name] as any[];
     let {form} = parentContext;
     let arrRowContexts = parentContext.getArrRowContexts(name);
-    let ui = parentContext.getUiItem(name) as UiArr;
+	let ui = parentContext.getUiItem(name) as UiArr;
+	let {onDeleted, onRestored} = ui;
     let arrLabel = name;
     let Templet:TempletType;
     let selectable:boolean, deletable:boolean, restorable:boolean;
@@ -97,11 +98,13 @@ export const ArrComponent = observer((
                     if (restorable === true) {
                         row.$isDeleted = !isDeleted;
                         let {$source} = row;
-                        if ($source !== undefined) $source.$isDeleted = !isDeleted;
+						if ($source !== undefined) $source.$isDeleted = !isDeleted;
+						if (onRestored) onRestored(row);
                     }
                     else {
                         let p = data.indexOf(row);
-                        if (p>=0) data.splice(p, 1);
+						if (p>=0) data.splice(p, 1);
+						if (onDeleted) onDeleted(row);
                     }
                     rowContext.clearErrors();
                 }

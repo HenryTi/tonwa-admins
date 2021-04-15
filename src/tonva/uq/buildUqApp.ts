@@ -216,9 +216,16 @@ async function buildUqsFolder(uqsFolder:string, options: UqAppOptions) {
 		let n1 = getUqName(uqName);
 		let tsUq = buildTsUq(uq);
 		overrideTsFile(uqsFolder, o1+n1, tsUq);
+		// as ${o1}${n1}
 		tsUqsIndexHeader += `\nimport { ${o1}${n1} } from './${o1}${n1}';`;
 		tsUqsIndexContent += `\n\t${o1}${n1}: ${o1}${n1}.Uq${o1}${n1};`;
-		tsUqsExports += `\nexport type {${o1}${n1}} from './${o1}${n1}';`;
+
+		tsUqsExports += `\nexport {`; 
+		for (let enm of uq.enumArr) {
+			let enmName = `${capitalCaseString(enm.sName)}`;
+			tsUqsExports += `\n\t${enmName} as ${o1}${n1}${enmName},`;
+		}
+		tsUqsExports += `\n} from './${o1}${n1}';`;
 	}
 
 	overrideTsFile(uqsFolder, 'index', 
@@ -341,10 +348,12 @@ async function loadUqEntities(uq:UqMan):Promise<void> {
 
 function buildUQ(uq:UqMan) {
 	let {uqOwner, uqName} = uq;
-	let ts:string = `export namespace ${getUqOwnerName(uqOwner)}${getUqName(uqName)} {`;
+	let ts:string = ``;
+	uq.enumArr.forEach(v => ts += uqEntityInterface<UqEnum>(v, buildEnumInterface));
+	
+	ts += `\nexport declare namespace ${getUqOwnerName(uqOwner)}${getUqName(uqName)} {`;
 	uq.tuidArr.forEach(v => ts += uqEntityInterface<Tuid>(v, buildTuidInterface));
     uq.actionArr.forEach(v => ts += uqEntityInterface<Action>(v, buildActionInterface));
-    uq.enumArr.forEach(v => ts += uqEntityInterface<UqEnum>(v, buildEnumInterface));
     uq.sheetArr.forEach(v => ts += uqEntityInterface<Sheet>(v, buildSheetInterface));
     uq.queryArr.forEach(v => ts += uqEntityInterface<Query>(v, buildQueryInterface));
     uq.bookArr.forEach(v => ts += uqEntityInterface<Book>(v, buildBookInterface));
@@ -461,7 +470,7 @@ function buildEnumInterface(enm: UqEnum) {
 	let {schema} = enm;
 	if (!schema) return;
 	let {values} = schema;
-	let ts = `export enum Uq${capitalCaseString(enm.sName)} {`;
+	let ts = `export enum ${capitalCaseString(enm.sName)} {`;
 	let first:boolean = true;
 	for (let i in values) {
 		if (first === false) {

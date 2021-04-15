@@ -24,7 +24,7 @@ export class CUq extends CUqBase {
     @observable services: DevService[];
     protected async internalStart(unit:Unit) {
         this.unit = unit;
-        this.uqList = await devApi.uqs(this.unit.id);
+        this.uqList = await devApi.uqs(this.unit.id, 200);
         this.openVPage(ListPage);
     }
 

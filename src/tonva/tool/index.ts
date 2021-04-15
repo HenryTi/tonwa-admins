@@ -7,3 +7,5 @@ export {LocalMap, LocalArr, LocalCache} from './localDb';
 export {LocalData} from './local';
 export {env} from './env';
 export {getObjPropIgnoreCase} from './getObjPropIgnoreCase';
+export * from './date';
+export * from './rules';
