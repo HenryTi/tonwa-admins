@@ -184,19 +184,6 @@ export class UqApi extends ApiBase {
 		});
     }
 
-    /*async update():Promise<string> {
-        return await this.get('update');
-    }*/
-
-    /*
-    async __loadAccess():Promise<any> {
-        let acc = this.access === undefined?
-            '' :
-            this.access.join('|');
-        let ret = await this.get('access', {acc:acc});
-        return ret;
-    }
-    */
     async loadAccess():Promise<any> {
         //return await localUqs.loadAccess(this);
         let acc = this.access === undefined?
@@ -205,16 +192,6 @@ export class UqApi extends ApiBase {
         let ret = await this.get('access', {acc:acc});
         return ret;
     }
-
-    /*async loadEntities():Promise<any> {
-        return await this.get('entities');
-    }*/
-
-    /*
-    async checkAccess():Promise<boolean> {
-        return await localUqs.checkAccess(this);
-    }
-    */
 
 	async allSchemas(): Promise<any> {
 		return await this.get('all-schemas');
@@ -228,138 +205,30 @@ export class UqApi extends ApiBase {
         return await this.post('queue-modify', {start:start, page:page, entities:entities});
     }
 
-    /*async schemas(names:string[]):Promise<any[]> {
-        return await this.post('schema', names);
-    }*/
-
-    /*
-    async tuidGet(name:string, id:number):Promise<any> {
-        return await this.get('tuid/' + name + '/' + id);
-    }
-
-    async tuidGetAll(name:string):Promise<any[]> {
-        return await this.get('tuid-all/' + name + '/');
-    }
-
-    async tuidSave(name:string, params:any):Promise<any> {
-        return await this.post('tuid/' + name, params);
-    }
-
-    async tuidSearch(name:string, arr:string, owner:number, key:string, pageStart:string|number, pageSize:number):Promise<any> {
-        let ret = await this.post('tuids/' + name, {
-            arr: arr,
-            owner: owner,
-            key: key,
-            pageStart: pageStart,
-            pageSize: pageSize
-        });
-        return ret;
-    }
-    async tuidArrGet(name:string, arr:string, owner:number, id:number):Promise<any> {
-        return await this.get('tuid-arr/' + name + '/' + owner + '/' + arr + '/' + id);
-    }
-    async tuidArrGetAll(name:string, arr:string, owner:number):Promise<any[]> {
-        return await this.get('tuid-arr-all/' + name + '/' + owner + '/' + arr + '/');
-    }
-    async tuidArrSave(name:string, arr:string, owner:number, params:any):Promise<any> {
-        return await this.post('tuid-arr/' + name + '/' + owner + '/' + arr + '/', params);
-    }
-    async tuidArrPos(name:string, arr:string, owner:number, id:number, order:number):Promise<any> {
-        return await this.post('tuid-arr-pos/' + name + '/' + owner + '/' + arr + '/', {
-            id: id,
-            $order: order
-        });
-    }
-
-    async tuidIds(name:string, arr:string, ids:number[]):Promise<any[]> {
-        try {
-            let url = 'tuidids/' + name + '/';
-            if (arr !== undefined) url += arr;
-            else url += '$';
-            let ret = await this.post(url, ids);
-            return ret;
-        }
-        catch (e) {
-            console.error(e);
-        }
-    }
-    */
-    /*async sheetSave(name:string, data:object):Promise<any> {
-        return await this.post('sheet/' + name, data);
-    }*/
-
-    /*async sheetAction(name:string, data:object) {
-        return await this.put('sheet/' + name, data);
-    }*/
-
-    /*async stateSheets(name:string, data:object) {
-        return await this.post('sheet/' + name + '/states', data);
-    }*/
-
-    /*async stateSheetCount(name:string):Promise<any> {
-        return await this.get('sheet/' + name + '/statecount');
-    }*/
-
-    /*async mySheets(name:string, data:object) {
-        return await this.post('sheet/' + name + '/my-sheets', data);
-    }*/
-
-    /*async getSheet(name:string, id:number):Promise<any> {
-        return await this.get('sheet/' + name + '/get/' + id);
-    }*/
-
-    /*async sheetArchives(name:string, data:object):Promise<any> {
-        return await this.post('sheet/' + name + '/archives', data);
-    }
-
-    async sheetArchive(name:string, id:number):Promise<any> {
-        return await this.get('sheet/' + name + '/archive/' + id);
-    }*/
-
-    /*async action(name:string, data:object):Promise<any> {
-        return await this.post('action/' + name, data);
-    }
-
-    async actionReturns(name:string, data:object):Promise<any[][]> {
-        return await this.post('action/' + name + '/returns', data);
-    }
-
-    async page(name:string, pageStart:any, pageSize:number, params:any):Promise<string> {
-        let p:any;
-        switch (typeof params) {
-            case 'undefined': p = {key: ''}; break;
-            default: p = _.clone(params); break;
-        }
-        p['$pageStart'] = pageStart;
-        p['$pageSize'] = pageSize;
-        return await this.post('query-page/' + name, p);
-    }
-
-    async query(name:string, params:any):Promise<any> {
-        let ret = await this.post('query/' + name, params);
-        return ret;
-    }
-    */
-/*
-    async history(name:string, pageStart:any, pageSize:number, params:any):Promise<string> {
-        let p = _.clone(params);
-        p['$pageStart'] = pageStart;
-        p['$pageSize'] = pageSize;
-        let ret = await this.post('history/' + name, p);
-        return ret;
-    }
-
-    async book(name:string, pageStart:any, pageSize:number, params:any):Promise<string> {
-        let p = _.clone(params);
-        p['$pageStart'] = pageStart;
-        p['$pageSize'] = pageSize;
-        let ret = await this.post('history/' + name, p);
-        return ret;
-    }
-*/
-    /*async user():Promise<any> {
-        return await this.get('user');
-    }*/
+	async getRoles():Promise<string[]> {
+		let ret = await this.get('get-roles',);
+		if (!ret) return null;
+		let parts:string[] = (ret as string).split('|');
+		let s:string[] = [];
+		for (let p of parts) {
+			p = p.trim();
+			if (!p) continue;
+			s.push(p);
+		}
+		if (s.length === 0) return null;
+		return s;
+	}
+	
+	async getAllRoleUsers():Promise<{user:number, admin:number, roles:string}[]> {
+		let ret = await this.get('get-all-role-users');
+		return ret;
+	}
+	async setUserRoles(theUser:number, roles:string):Promise<void> {
+		await this.post('set-user-roles', {theUser, roles});
+	}
+	async deleteUserRoles(theUser:number):Promise<void> {
+		await this.get('delete-user-roles', {theUser});
+	}
 }
 
 let channels:{[unitId:number]: HttpChannel} = {};

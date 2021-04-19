@@ -8,6 +8,7 @@ import { VHome } from './VHome';
 import { CAppXAccount } from 'XAccount';
 import { CDevelopers } from 'Dev/developers';
 import { AdminDevs } from 'store/adminDevs';
+import { CUqRoles } from '../UqRoles';
 import { CAdmins } from 'Admins';
 import { CUsers } from 'Users';
 import { AppController, CUq } from 'Dev';
@@ -22,6 +23,7 @@ export class CHome extends CUqBase {
 	adminDevs: AdminDevs;
 	cAdmins: CAdmins;
 	cUsers: CUsers;
+	cUqRoles: CUqRoles;
 
     private async loadAdminUnits(): Promise<void> {
         let ret = await mainApi.userUnitAdmins();
@@ -96,6 +98,7 @@ export class CHome extends CUqBase {
             }
         }
         this.unit = unit;
+		this.cUqRoles = this.newC(CUqRoles, this.unit.id)
         this.openVPage(VUnit);
     }
 

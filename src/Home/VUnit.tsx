@@ -79,6 +79,13 @@ export class VUnit extends VPage<CHome> {
         //page: AdministorsPage,
         controller: this.controller.cAdmins, // new CAdmins(undefined)
     };
+    private uqRolesAction: ActionItem = {
+        title: 'UQ角色设置',
+        right: rArrow,
+        icon: 'universal-access',
+        //page: AdministorsPage,
+        controller: this.controller.cUqRoles,
+    };
     /*
     private appUserManagerAction: ActionItem = {
         main: 'App用户管理员',
@@ -108,6 +115,7 @@ export class VUnit extends VPage<CHome> {
         let {isAdmin, isOwner, isDev, type} = unit;
         let items:Item[] = [];
         if (isOwner === 1 || isAdmin === 1) {
+			items.push(this.uqRolesAction);
             items.push(this.adminsAction);
         }
         if ((type & 2) !== 0) {
@@ -216,7 +224,7 @@ export class VUnit extends VPage<CHome> {
             r = <span>{right}</span>;
         }
         return <LMR className={classNames('px-3 py-2 align-items-center', className)} left={left} right={r}>
-            <div className="px-3"><b>{mid}</b></div>
+            <div className="px-3">{mid}</div>
         </LMR>;
     }
     private rowClick = async (item:Item) => {

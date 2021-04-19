@@ -27,7 +27,10 @@ class DevApi extends CenterApiBase {
         return await this.get('apps', {unit:unit, pageSize: pageSize});
     }
     async uqs(unit:number, pageSize:number=30):Promise<any[]> {
-        return await this.get('uqs', {unit:unit, pageSize: pageSize});
+        return await this.get('uqs', {unit, pageSize});
+    }
+    async unitUQs(unit:number, pageSize:number=30):Promise<any[]> {
+        return await this.get('unit-uqs', {unit, pageSize});
     }
     async buses(unit:number, pageSize:number=30):Promise<any[]> {
         return await this.get('buses', {unit:unit, pageSize: pageSize});
