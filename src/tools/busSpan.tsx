@@ -45,8 +45,8 @@ export class BusSpan extends React.Component<BusLinkProps> {
 class BusInfo extends React.Component<BusLinkProps> {
     private rows:Prop[];
     render() {
-        let uq = caches.buses.get(this.props.id);
-        let {name, discription, unit, date_init, date_update} = uq;
+        let bus = caches.buses.get(this.props.id);
+        let {name, discription, unit, date_init, date_update} = bus;
         let disp = <div>
             <div>{discription}</div>
             <IdDates date_update={date_update} date_init={date_init} />

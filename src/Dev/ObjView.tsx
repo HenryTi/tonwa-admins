@@ -26,6 +26,7 @@ export class ObjView<T extends DevObjBase> extends React.Component<ObjViewProps<
     }
     render() {
         let {title, items} = this.props;
+		if (!store.unit) debugger;
         let {isOwner} = store.unit;
 		let right = isOwner>0 && <button className='btn btn-success btn-sm mr-2'
 			onClick={()=>this.newItem()}><FA name="plus" /></button>;
@@ -44,6 +45,7 @@ class New<T extends DevObjBase> extends React.Component<ObjViewProps<T>> {
         this.onSubmit = this.onSubmit.bind(this);
     }
     async onSubmit(values:any):Promise<SubmitResult> {
+		values.owner = this.props
         if (await this.props.items().check(values) === false) return;
         let ret = await this.props.items().saveCur(values);
         if (ret === true) {

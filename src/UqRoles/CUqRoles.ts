@@ -44,6 +44,7 @@ export class CUqRoles extends CUqBase {
 					roles = [];
 				}
 			}
+			if (!roles) return v;
 			roles = roles.filter(v => v);
 			return {
 				...v,

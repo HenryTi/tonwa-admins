@@ -1,8 +1,9 @@
 import {observable} from 'mobx';
-import _ from 'lodash';
+import _, { delay } from 'lodash';
 import {devApi} from '../api';
 import {Store} from './store';
 import { DevObjBase, DevApp, DevUQ, DevBus, DevServer, DevService } from 'model';
+import { parse } from 'path';
 
 interface Counts {
     uq: number;
@@ -161,6 +162,10 @@ class Uqs extends ObjItems<DevUQ> {
 class Buses extends ObjItems<DevBus> {
     protected async _load() {
         let ret = await devApi.buses(this.store.unit.id);
+		for (let item of ret) {
+			let {schema, source} = item;
+			if (!source) item.source = schema;	
+		}
         return ret;
     }
     protected async _save(item:DevBus):Promise<number> {
@@ -171,10 +176,33 @@ class Buses extends ObjItems<DevBus> {
     }
     protected _inc() { this.dev.counts.bus++; }
     protected _dec() { this.dev.counts.bus--; }
+	private checkBusName(item:DevBus, busName:string):boolean {
+		let parts = busName.split('/');
+		switch (parts.length) {
+			default:
+				alert(`'${busName}'不符合bus名称的格式: 所有者/名称`); 
+				return false;
+			case 1:
+				if (parts[0].toLowerCase() !== item.name) {
+					alert(`$prop '${busName}' in schema 应该跟名称一致`); 
+					return false;
+				}
+				break;
+			case 2:
+				if (parts[0].toLowerCase() !== this.store.unit.name.toLowerCase() 
+					|| parts[1].toLowerCase() !== item.name.toLowerCase())
+				{
+					alert(`$prop '${busName}' in schema 应该跟 所有者/名称 一致`); 
+					return false;
+				}
+				break;
+		}
+		return true;
+	}
     async check(item:DevBus):Promise<boolean> {
-        let {schema} = item;
+        let {source} = item;
         try {
-            let bus = JSON.parse(schema);
+            let bus = JSON.parse(source);
             for (let i in bus) {
                 let face = bus[i];
                 if (face === null || face === undefined) {
@@ -182,15 +210,26 @@ class Buses extends ObjItems<DevBus> {
                     return false;
                 }
                 switch (typeof face) {
+					case 'object': break;
+					case 'string':
+						if (i === '$') {
+							if (this.checkBusName(item, face) === false) return false;
+						}
+						delete bus[i];
+						continue;
+					default:
+						delete bus[i];
+						continue;
+					/*
                     case 'function':
                         alert(`face ${i} is function，不接受function`);
                         return false;
                     //case 'bigint':
                     case 'boolean':
                     case 'number':
-                    case 'string':
                         alert(`face ${i} 应该是数组或者对象`);
                         return false;
+					*/
                 }
                 if (Array.isArray(face) === true) {
                     if (checkBusFace(face, bus) === false) return false;
@@ -199,7 +238,19 @@ class Buses extends ObjItems<DevBus> {
                     if (checkBusQuery(face, bus) === false) return false;
                 }
             }
-            return true;
+			for (let i in bus) {
+				let face = bus[i];
+				if (!face) continue;
+				if (faceReplaceStringWithFace(face, bus, []) === false) {
+					alert(`face ${i} 包含了循环引用`); 
+					return false;
+				};
+			}
+			item.schema = JSON.stringify(bus);
+			if (!item.owner) {
+				item.owner = this.store.unit.name;
+			}
+			return true;
         }
         catch (err) {
             alert(err.message);
@@ -220,7 +271,8 @@ function refNameOk(faceName:string, bus:any):boolean {
         alert(`face ${faceName} is referenced, bus is not array`);
         return false;
     }
-    return refArrayOk(face as any[], bus);
+	return true;
+    //return refArrayOk(face as any[], bus);
 }
 
 function refArrayOk(items:any[], bus:any):boolean {
@@ -234,18 +286,114 @@ function refArrayOk(items:any[], bus:any):boolean {
     return true;
 }
 
+function faceReplaceStringWithFace(face: any[], bus:any, arr:any[]):boolean {
+	let len = face.length;
+	let hasFaceReplace:boolean = false;
+	let newFace = [];
+	for (let i=0; i<len; i++) {
+		let field = face[i];
+		if (typeof field !== 'string') {
+			pushFaceField(newFace, field);
+			continue;
+		}
+		hasFaceReplace = true;
+		let faceFromName = bus[field];
+		if (!faceFromName) continue;
+		if (arr.findIndex(v => v === faceFromName) >= 0) return false;
+		if (faceReplaceStringWithFace(faceFromName, bus, [face]) === false) return false;
+		for (let f of faceFromName) {
+			pushFaceField(newFace, f);
+		}
+	}
+	if (hasFaceReplace === true) {
+		face.splice(0, face.length, ...newFace);
+	}
+	return true;
+}
+
+function pushFaceField(face: any[], field:any) {
+	for (let f of face) {
+		let {name:fn} = f;
+		let {name, type} = field;
+		if (fn.toLowerCase() === name.toLowerCase()) {
+			f.type = type;
+			return;
+		}
+	}
+	face.push(field);
+}
+
+function parseField(str:string):object|string|undefined {
+	if (str === undefined) return undefined;
+	let p = str.indexOf('--');
+	if (p >= 0) {
+		str = str.substr(0, p);
+	}
+	str = str.trim();
+	if (str.length === 0) return undefined;
+	let parts = str.split(':');
+	let len = parts.length;
+	if (len === 0) return undefined;
+	if (len === 1) return str;
+	//"detail: order-detail -- { name: detail, type: array, fields: order-detail }"
+	let name = parts[0].trim();
+	let type = parts[1].trim();
+	if (name.length === 0) return undefined;
+	let fields:string = undefined;
+	switch (type) {
+		default: 
+			fields = type;
+			type = 'array';
+			break;
+		case 'id':
+		case 'number':
+		case 'string': break;
+	}
+	return {name, type, fields};
+}
+
 function checkBusFace(face: any[], bus:any):boolean {
-    if (!face || typeof face !== 'object') {
-        alert('only object');
+    if (Array.isArray(face) === false) {
+        alert('face must be array');
         return false;
     }
-    for (let field of face) {
+	let len = face.length;
+	let delArr:number[] = [];
+    for (let i=0; i<len; i++) {
+		let field = face[i];
+		switch (typeof field) {
+			default:
+				alert('face中的项，只能是object或者字符串');
+				return false;
+			case 'object':
+				if (field['-']) delete field['-'];
+				if (field['--']) delete field['--'];
+				break;
+			case 'string':
+				let parsed = parseField(field);
+				if (parsed === undefined) {
+					delArr.push(i);
+					continue;
+				}
+				if (typeof parsed === 'string') {
+					let faceFromName = bus[parsed];
+					if (!faceFromName) {
+						alert(`'${field}' 没有定义`);
+						return false;
+					}
+					face.splice(i, 1, parsed);
+					continue;
+				}
+				field = parsed;
+				face.splice(i, 1, parsed);
+				break;
+		}
         let {type} = field;
         if (type === undefined) {
             alert('type not defined');
             return false;
         }
-        else if (type === 'array') {
+        if (type === 'array') {
             let {fields} = field;
             if (refNameOk(fields, bus) === false) {
                 return false;
@@ -261,6 +409,10 @@ function checkBusFace(face: any[], bus:any):boolean {
             return false;
         }
     }
+	len = delArr.length;
+	for (let i=len-1; i>=0; i--) {
+		face.splice(delArr[i], 1);
+	}
     return true;
 }
 

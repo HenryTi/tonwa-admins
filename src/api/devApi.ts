@@ -15,7 +15,10 @@ class DevApi extends CenterApiBase {
         return await this.get('app', {id:id});
     }
     async bus(id:number):Promise<any> {
-        return await this.get('bus', {id:id});
+        let ret = await this.get('bus', {id:id});
+		let {schema, source} = ret;
+		if (!source) ret.source = schema;
+		return ret;
     }
     async uq(id:number):Promise<any> {
         return await this.get('uq', {id:id});

@@ -20,7 +20,7 @@ export class VUqRoles extends VPage<CUqRoles> {
 				<div className="small text-muted">{discription}</div>
 				<div className="mt-3">
 					<small className="text-muted mr-1">角色:</small>
-					{roles.map((v, index) => <span key={index} className="mx-2">{v}</span>)}
+					{roles?.map((v, index) => <span key={index} className="mx-2">{v}</span>)}
 				</div>
 			</div>
 		</div>;

@@ -33,6 +33,7 @@ import {Id} from './id';
         version: number;
         discription: string;
         schema: string;
+		source: string;
         owner?: string;
         mine: number;
         isPublic: number;

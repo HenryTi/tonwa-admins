@@ -19,8 +19,14 @@ export class VRoleAdmin extends VPage<CUqRoles> {
 				<div className="mr-auto">用户角色</div>
 				<button className="btn btn-sm btn-outline-primary" onClick={()=>this.openVPage(VAddUser)}><FA name="plus" /> 增加</button>
 			</div>
-			<MeItem />
-			<VUserRoles />
+			{
+				userRoles.length > 0? <>
+					<MeItem />
+					<VUserRoles />
+				</>
+				:
+				<div className="small text-muted p-3">[无角色用户]</div>
+			}
 		</div>;
 	}
 

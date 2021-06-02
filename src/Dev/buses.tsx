@@ -2,7 +2,6 @@ import * as React from 'react';
 import {observer} from 'mobx-react';
 import {EasyDate, Prop, PropGrid, LMR, Muted, FA} from 'tonva';
 import {UnitSpan, IdDates} from '../tools';
-//import {appIcon} from '../consts';
 import {store} from '../store';
 import { ObjViewProps } from './ObjViewProps';
 import { DevBus } from 'model';
@@ -42,7 +41,7 @@ class Info extends React.Component<DevBus> {
             '',
             {
                 type: 'component', 
-                label: 'Schema',
+                label: '代码',
                 vAlign: 'stretch',
                 component: <SchemaView />,
             },
@@ -58,13 +57,12 @@ export class SchemaView extends React.Component {
     render() {
         let bus = store.dev.buses.cur;
         if (bus === null) return '...';
-        let content = bus.schema;
+        let content = bus.source;
         return <div className="d-flex py-2 w-100 align-items-center" style={{flex:1}}>
             <pre>
                 {content}
             </pre>
         </div>;
-
     }
 }
 
@@ -81,8 +79,8 @@ const busesProps:ObjViewProps<DevBus> = {
             face: {type: 'textarea'}
         },
         {
-            label: 'Schema',
-            field: {name: 'schema', type: 'string', maxLength: 2500},
+            label: '代码',
+            field: {name: 'source', type: 'string', maxLength: 2500},
             face: {type: 'textarea', rows: 8}
         },
     ],
