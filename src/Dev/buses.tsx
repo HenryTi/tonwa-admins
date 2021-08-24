@@ -80,7 +80,7 @@ const busesProps:ObjViewProps<DevBus> = {
         },
         {
             label: '代码',
-            field: {name: 'source', type: 'string', maxLength: 2500},
+            field: {name: 'source', type: 'string', maxLength: 25000},
             face: {type: 'textarea', rows: 8}
         },
     ],
