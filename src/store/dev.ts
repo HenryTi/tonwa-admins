@@ -253,7 +253,7 @@ class Buses extends ObjItems<DevBus> {
 			return true;
         }
         catch (err) {
-            alert(err.message);
+            alert((err as any).message);
             return false;
         }
     }
@@ -277,7 +277,18 @@ function refNameOk(faceName:string, bus:any):boolean {
 
 function refArrayOk(items:any[], bus:any):boolean {
     for (let item of items) {
-        let {type} = item;
+        let type: string;
+        if (typeof item === 'string') {
+            let pos = item.indexOf(':');
+            if (pos<=0) {
+                alert('type is not defined');
+                return false;
+            }
+            type = item.substr(pos+1).trim();
+        }
+        else {
+            type = item.type;
+        }
         if (['id', 'string', 'number', 'array'].indexOf(type) < 0) {
             alert(`type ${type} out of ['id', 'string', 'number', 'array']`);
             return false;
@@ -443,13 +454,20 @@ function checkBusQuery(face: any, bus:any):boolean {
 }
 
 function checkBusQueryParam(param: any, bus:any):boolean {
-    if (param === null || param === undefined) return;
+    if (param === null || param === undefined) return true;
     switch (typeof param) {
         case 'string':
             return refNameOk(param, bus);
         default:
             if (Array.isArray(param)) {
-                return refArrayOk(param, bus);
+                if (refArrayOk(param, bus) === false) return false;
+                for (let i=0; i<param.length; i++) {
+                    let item = param[i];
+                    if (typeof item === 'string') {
+                        param[i] = parseField(item);
+                    }
+                }
+                return true;
             }
             break;
     }

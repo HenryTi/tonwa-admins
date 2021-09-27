@@ -97,7 +97,7 @@ export class CompileResultPage extends React.Component<CompileResultProps> {
 
     private startTime: Date;
 	private total: number;
-    private async pump(reader: ReadableStreamReader, resultSections: ResultSections):Promise<boolean> {
+    private async pump(reader: ReadableStreamReader<any>, resultSections: ResultSections):Promise<boolean> {
 		let ret = await reader.read();
         let {done, value} = ret;
         if (done) {
