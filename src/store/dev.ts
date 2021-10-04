@@ -445,6 +445,7 @@ function checkBusQuery(face: any, bus:any):boolean {
                         alert(item + ' is not defined');
                         return false;
                     }
+                    bus.returns = returns;
                 }
                 if (checkBusFace(returns, bus) === false) return false;
                 break;
