@@ -57,6 +57,7 @@ import {Id} from './id';
         app: number;
         uq: number;
         db: string;
+        uqUniqueUnit: number;
         compile_time: number;
         deploy_time: number;
     }

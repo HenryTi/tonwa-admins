@@ -15,7 +15,6 @@ export class UQPage extends VPage<CUq> {
 
     private editItem = async () => {
         await this.openVPage(EditPage);
-        //nav.push(<EditAppPage {...this.props} />);
     }
 
     private deleteItem = async () => {
@@ -65,26 +64,8 @@ export class UQPage extends VPage<CUq> {
             },
             '',
             action('code', 'text-info', '上传提交UQ代码', onUqUpload),
-            /*{
-                type: 'component',
-                label: undefined, // '上传UQ', 
-                component: <LMR onClick={onUqUpload} className="w-100 py-2 cursor-pointer" 
-                    left="上传提交UQ代码" right={right} />
-            },*/
             action('database', 'text-warning', '测试版 - 编译UQ数据库', onUqTest),
-            /*{
-                type: 'component', 
-                label: undefined, // '测试UQ', 
-                component: <LMR onClick={onUqTest} className="w-100 py-2 cursor-pointer" 
-                    left="升级UQ测试数据库" right={angle} />
-            },*/
             action('database', 'text-success', '发布版 - 编译UQ数据库', onUqDeploy),
-            /*{
-                type: 'component', 
-                label: undefined, // '发布UQ', 
-                component: <LMR onClick={onUqDeploy} className="w-100 py-2 cursor-pointer" 
-                    left="升级UQ生产数据库" right={angle} />
-            },*/
         ];
 
         let adminDev:any;
@@ -136,7 +117,7 @@ export class UQPage extends VPage<CUq> {
     });
     private renderService = observer((props: {service:DevService; index:number}):JSX.Element => {
         let {service} = props;
-        let {db, /*url, urlTest, */server, serverTest, compile_time, deploy_time} = service;
+        let {db, server, serverTest, uqUniqueUnit, compile_time, deploy_time} = service;
         let compile = !compile_time?
             <Muted>未测试</Muted> 
             :
@@ -147,7 +128,11 @@ export class UQPage extends VPage<CUq> {
             <EasyTime date={deploy_time}/>;
 
         return <div className="d-block w-100 cursor-pointer mb-2 py-2 px-3">
-            <div><small>数据库名：</small>{db}</div>
+            <div>
+                <small>数据库名：</small>{db}
+                &nbsp; &nbsp; &nbsp; 
+                <small>小号($unit)：</small><UnitSpan id={uqUniqueUnit} />
+            </div>
             <LMR className="align-items-center"
                 right={<small>{deploy}</small>}>
                 <div>

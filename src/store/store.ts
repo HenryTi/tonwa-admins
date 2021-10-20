@@ -2,7 +2,7 @@ import {observable} from 'mobx';
 import _ from 'lodash';
 import {appInFrame, host} from 'tonva';
 import {mainApi, devApi} from '../api';
-import {Unit, UnitApp, Role, RoleMember} from '../model';
+import {Unit, UnitApp, Role, RoleMember, UnitAdmin} from '../model';
 import {Dev} from './dev';
 
 export class Store {
@@ -19,6 +19,11 @@ export class Store {
     @observable roleMember: RoleMember;
     @observable roleMembers: RoleMember[];
     @observable memberRoles: Role[];
+
+    unitAdmins: UnitAdmin[]; // 仅仅为Admins调试用。从登录用户获取units
+    accUnits: UnitAdmin[];
+    devUnits: UnitAdmin[];
+    bothUnits: UnitAdmin[];
 
     init() {
         this.unit = undefined;
@@ -43,6 +48,32 @@ export class Store {
         this.roleMember = undefined;
         this.roleMembers = undefined;
         this.memberRoles = undefined;
+    }
+
+    async loadAdminUnits(): Promise<void> {
+        let ret = await mainApi.userUnitAdmins();
+        let unitAdmins = this.unitAdmins = ret[0];
+        if (unitAdmins.length === 1) {
+            appInFrame.unit = unitAdmins[0].id;
+            await store.loadUnit();
+        }
+        else {
+            this.accUnits = [];
+            this.devUnits = [];
+            this.bothUnits = [];
+            for (let ua of unitAdmins) {
+                let {type} = ua;
+                if ((type & 3) === 3) {
+                    this.bothUnits.push(ua);
+                }
+                else if ((type & 1) === 1) {
+                    this.devUnits.push(ua);
+                }
+                else if ((type & 2) === 2) {
+                    this.accUnits.push(ua);
+                }
+            }
+        }
     }
 
     setRole(role:Role) {

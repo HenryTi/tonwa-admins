@@ -102,12 +102,12 @@ export abstract class Control extends ControlBase {
             }
             this.value = v;
         }
-        catch (e) {
+        catch (e:any) {
             this.error = e.message;
         }
     }
     render():JSX.Element {
-        let n;
+        let n:any;
         if (this._face !== undefined) {
             let {notes} = this._face;
             if (notes !== undefined) n = <small className="text-muted">{notes}</small>;

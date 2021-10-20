@@ -590,13 +590,11 @@ export class Dev {
     uqs:Uqs = undefined;
     buses:Buses = undefined;
     servers:Servers = undefined;
-    //uqdbs:Uqdbs = undefined;
     services:Services = undefined;
 
     searchApp:SearchItems<DevApp> = undefined;
     searchUq:SearchItems<DevUQ> = undefined;
     searchServer:SearchItems<DevServer> = undefined;
-    //searchUqdb:SearchItems<Uqdb> = undefined;
     
     async loadCounts(): Promise<void> {
         let {unit} = this.store;

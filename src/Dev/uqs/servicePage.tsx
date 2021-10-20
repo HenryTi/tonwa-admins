@@ -3,7 +3,7 @@ import { observable } from 'mobx';
 import { Page, VPage, nav } from 'tonva';
 import { CUq } from './CUq';
 import { Prop, PropGrid } from 'tonva';
-import { StringValueEdit, ServerSpan } from 'tools';
+import { StringValueEdit, ServerSpan, UnitSpan } from 'tools';
 import { observer } from 'mobx-react';
 import { DevService } from 'model';
 
@@ -16,30 +16,17 @@ export class ServicePage extends VPage<CUq> {
     private async changeProp(prop:string, value:any):Promise<any> {
         return await this.controller.changeServiceProp(this.service, prop, value);
 	}
-	/*
-    private onUrlChanged = async (value:any, orgValue:any):Promise<string|void> => {
-        let ret = await this.changeProp('url', value);
-        if (ret === 0) {
-            //return 'URL已经被使用了';
-            return;
-        }
-        this.service.url = value;
-    }
-    private onUrlTestChanged = async (value:any, orgValue:any):Promise<string|void> => {
-        let ret = await this.changeProp('urlTest', value);
-        if (ret === 0) {
-            //return 'URL已经被使用了';
-            return;
-        }
-        this.service.urlTest = value;
-	}
-	*/
     private onDbChanged = async (value:any, orgValue:any):Promise<string|void> => {
         let ret = await this.changeProp('db', value);
         if (ret === 0) {
             return 'Db已经被使用了';
         }
         this.service.db = value;
+    }
+    private onUnitPick = async () => {
+        let ret = await this.controller.pickUnit();
+        this.changeProp('uq_unique_unit', ret);
+        this.service.uqUniqueUnit = ret;
     }
     private onServerPick = async () => {
         let ret = await this.controller.pickServer();
@@ -69,6 +56,12 @@ export class ServicePage extends VPage<CUq> {
                     value={this.service.db}
                     onChanged={this.onDbChanged} />)
             },
+            {
+                type: 'component',
+                label: '小号($unit)',
+                component: <UnitSpan id={this.service.uqUniqueUnit} />,
+                onClick: this.onUnitPick
+            },
             '',
             {
                 type: 'component',
@@ -82,27 +75,6 @@ export class ServicePage extends VPage<CUq> {
                 component: <ServerSpan id={this.service.serverTest} />,
                 onClick: this.onServerTestPick
 			},
-			/*
-            '',
-            {
-                type: 'string',
-                name: 'url',
-                label: 'URL',
-                onClick: ()=>nav.push(<StringValueEdit 
-                    title="修改URL"
-                    value={this.service.url}
-                    onChanged={this.onUrlChanged} />)
-            },
-            {
-                type: 'string',
-                name: 'urlTest',
-                label: 'URL-Test',
-                onClick: ()=>nav.push(<StringValueEdit 
-                    title="修改URL-Test"
-                    value={this.service.urlTest}
-                    onChanged={this.onUrlTestChanged} />)
-			},
-			*/
         ];
         let right = <button onClick={this.onDeleteClick} 
             className="btn btn-sm btn-success align-self-center">删除</button>;

@@ -12,6 +12,7 @@ import { VUqDevsAdmin } from './VUqDevsAdmin';
 import { CUqBase } from 'UqApp';
 import { CPickServer } from './CPickServer';
 import { Admins } from 'store/admins';
+import { CPickUnit } from './CPickUnit';
 
 export class CUq extends CUqBase {
     private unit: Unit;
@@ -143,5 +144,10 @@ export class CUq extends CUqBase {
     pickServer = async () => {
         let cPickServer = this.newC(CPickServer);
         return await cPickServer.pick();
+    }
+
+    pickUnit = async () => {
+        let cPickUnit = this.newC(CPickUnit);
+        return await cPickUnit.pick();
     }
 }

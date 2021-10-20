@@ -16,40 +16,11 @@ import { AppController, CUq } from 'Dev';
 export class CHome extends CUqBase {
     unit: Unit;
     isProduction: boolean;
-    unitAdmins: UnitAdmin[]; // 仅仅为Admins调试用。从登录用户获取units
-    accUnits: UnitAdmin[];
-    devUnits: UnitAdmin[];
-    bothUnits: UnitAdmin[];
 	adminDevs: AdminDevs;
 	cAdmins: CAdmins;
 	cUsers: CUsers;
 	cUqRoles: CUqRoles;
 
-    private async loadAdminUnits(): Promise<void> {
-        let ret = await mainApi.userUnitAdmins();
-        let unitAdmins = this.unitAdmins = ret[0];
-        if (unitAdmins.length === 1) {
-            appInFrame.unit = unitAdmins[0].id;
-            await store.loadUnit();
-        }
-        else {
-            this.accUnits = [];
-            this.devUnits = [];
-            this.bothUnits = [];
-            for (let ua of unitAdmins) {
-                let {type} = ua;
-                if ((type & 3) === 3) {
-                    this.bothUnits.push(ua);
-                }
-                else if ((type & 1) === 1) {
-                    this.devUnits.push(ua);
-                }
-                else if ((type & 2) === 2) {
-                    this.accUnits.push(ua);
-                }
-            }
-        }
-    }
     protected async internalStart(param?:any):Promise<void> {
 		this.cAdmins = this.newC(CAdmins);
 		this.cUsers = new CUsers(this.res);
@@ -59,7 +30,7 @@ export class CHome extends CUqBase {
         console.log('admins isProduction %s', this.isProduction);
 
         if (this.isProduction === false) {
-            await this.loadAdminUnits();
+            await store.loadAdminUnits();
         }
         else {
             await store.loadUnit();

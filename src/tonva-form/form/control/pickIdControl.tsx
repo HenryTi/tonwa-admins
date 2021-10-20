@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {observable} from 'mobx';
+import {computed, observable} from 'mobx';
 import {IdPickFace} from '../face';
 import {Control} from './control';
 
@@ -21,6 +20,9 @@ export class PickIdControl extends Control {
         let {id, caption} = fromPicked(item);
         this.value = id;
         this.caption = caption;
+    }
+    @computed get hasError():boolean {
+        return this._field.required === true && this.value === undefined;
     }
     onPicked = (value: any) => {
         this.value = value.id;
@@ -48,24 +50,9 @@ export class PickIdControl extends Control {
         }
         return String(this.value);
     }
-    /*
-    private buildContent():string|JSX.Element {
-        let {tuid, input} = this.face;
-        if (input === undefined) {
-            //return <div>no input on idpick</div>;
-            return <div onClick={this.onClick}>{this.controlContent()}</div>;
-        }
-        return <input.component id={this.value} 
-            tuid={tuid}
-            input={input}
-            entitiesUI={this.formView.props.context} 
-            params={this.formView.readValues()}
-            onPicked={this.onPicked} />;
-    }*/
     renderControl():JSX.Element {
         let {tuid, input} = this.face;
         if (input === undefined) {
-            //return <div>no input on idpick</div>;
             return <div className="form-control-plaintext px-2 border text-primary rounded cursor-pointer"
                 onClick={this.onClick}>
                 {this.controlContent()}
@@ -74,10 +61,6 @@ export class PickIdControl extends Control {
         return <div className="form-control-static ">
             <input.component id={this.value} 
                 ui={tuid}
-                //input={input}
-                //entitiesUI={this.formView.props.context} 
-                //params={this.formView.readValues()}
-                //onPicked={this.onPicked}
                 />
         </div>;
     }

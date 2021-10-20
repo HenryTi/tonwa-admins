@@ -1,4 +1,3 @@
-import * as React from 'react';
 import classNames from 'classnames';
 import { VPage, Page, List, LMR, FA } from 'tonva';
 import { CHome } from './CHome';
@@ -7,7 +6,8 @@ import { store } from 'store';
 
 export class VHome extends VPage<CHome> {
     async open() {
-        let {isProduction, unitAdmins} = this.controller;
+        let {isProduction} = this.controller;
+        let {unitAdmins} = store;
         if (isProduction === false) {
             switch (unitAdmins.length) {
                 default: this.openPage(this.selectUnitPage); return;
@@ -29,7 +29,8 @@ export class VHome extends VPage<CHome> {
     }
 
     private selectUnitPage = () => {
-        let {accUnits, devUnits, bothUnits, logout} = this.controller;
+        let {logout} = this.controller;
+        let {accUnits, devUnits, bothUnits} = store;
         let item = {render: this.renderUnitAdmin, onClick: this.onClickUnit};
         let list = (items:UnitAdmin[], label:string) => {
             return items.length>0 &&
