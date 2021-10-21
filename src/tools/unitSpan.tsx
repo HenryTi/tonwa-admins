@@ -21,7 +21,9 @@ export class UnitSpan extends React.Component<UnitLinkProps> {
     render() {
         let {id, isLink, className} = this.props;
         if (id === undefined) return null;
+        if (id === null) return null;
         let unit = caches.units.get(id);
+        if (!unit) return null;
         let content:any;
         let {name, nick, discription} = unit;
         let disc = discription && '- ' + discription;
