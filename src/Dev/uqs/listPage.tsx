@@ -8,7 +8,7 @@ import { DevUQ } from 'model';
 import { CompileResultPage } from './compileResultPage';
 
 export class ListPage extends VPage<CUq> {
-    async open(param:any) {
+    async open(param: any) {
         this.openPage(this.page);
     }
     private newItem = () => {
@@ -18,23 +18,23 @@ export class ListPage extends VPage<CUq> {
     private batchCompile = () => {
         this.openPage(this.batchCompilePage);
     }
-    private page = ():JSX.Element => {
-        let {uqList: list, listRowClick} = this.controller;
-        let {isOwner} = store.unit;
-        let actions:DropdownAction[] = [
-            {icon:'plus', caption:'新增UQ', action: this.newItem},
-            {icon:'plus', caption:'批量编译', action: this.batchCompile},
+    private page = (): JSX.Element => {
+        let { uqList: list, listRowClick } = this.controller;
+        let { isOwner } = store.unit;
+        let actions: DropdownAction[] = [
+            { icon: 'plus', caption: '新增UQ', action: this.newItem },
+            { icon: 'plus', caption: '批量编译', action: this.batchCompile },
         ];
-        let right = isOwner>0 && 
+        let right = isOwner > 0 &&
             <DropdownActions className="btn-primary mr-2 align-self-center" icon="bars" actions={actions}>
-                <button className='btn btn-primary btn-sm' onClick={()=>this.newItem()}><FA name="plus" /></button>
+                <button className='btn btn-primary btn-sm' onClick={() => this.newItem()}><FA name="plus" /></button>
             </DropdownActions>
         return <Page header="UQ" right={right}>
-            <List items={list} item={{render: this.listRow, onClick: listRowClick}} />
+            <List items={list} item={{ render: this.listRow, onClick: listRowClick }} />
         </Page>
     }
-    private listRow = (item:DevUQ):JSX.Element => {
-        let {name, discription, service_count, date_update} = item;
+    private listRow = (item: DevUQ): JSX.Element => {
+        let { name, discription, service_count, date_update } = item;
         return <LMR className="py-1 px-3 align-items-center"
             left={<FA name="database" className="text-primary fa-lg" />}
             right={<div className="text-right">
@@ -48,12 +48,12 @@ export class ListPage extends VPage<CUq> {
         </LMR>;
     }
 
-    private onSelect = (item:DevUQ, isSelected:boolean, anySelected:boolean) => {
+    private onSelect = (item: DevUQ, isSelected: boolean, anySelected: boolean) => {
         //alert('ok');
     }
 
-    private listCompileRow = (item:DevUQ):JSX.Element => {
-        let {name, discription, date_update} = item;
+    private listCompileRow = (item: DevUQ): JSX.Element => {
+        let { name, discription, date_update } = item;
         return <LMR className="py-1 px-3 align-items-center"
             left={<FA name="database" className="text-info fa-lg" />}
             right={<div className="text-right">
@@ -66,7 +66,7 @@ export class ListPage extends VPage<CUq> {
         </LMR>;
     }
 
-    private list:List;
+    private list: List;
     private selectAll = () => {
         this.list.selectAll();
     }
@@ -76,20 +76,26 @@ export class ListPage extends VPage<CUq> {
     private test = () => {
         this.compile('test', false);
     }
+    /*
+    根据uq编译器版本，自动决定是不是需要彻底编译
     private testThoroughly = () => {
         this.compile('test', true);
     }
+    */
     private deploy = () => {
         this.compile('deploy', false);
     }
+    /*
+    根据uq编译器版本，自动决定是不是需要彻底编译
     private deployThoroughly = () => {
         this.compile('deploy', true);
     }
-    private async compile(action:'test'|'deploy', thoroughly: boolean) {
+    */
+    private async compile(action: 'test' | 'deploy', thoroughly: boolean) {
         let selectItems = this.list.selectedItems;
         //let {action, thoroughly, fast} = this.options;
         let url = store.uqServer + 'uq-compile/batch';
-        let actionName:string;
+        let actionName: string;
         switch (action) {
             case 'test': actionName = '测试'; break;
             case 'deploy': actionName = '发布'; break;
@@ -122,10 +128,10 @@ export class ListPage extends VPage<CUq> {
         }
     }
 
-    private batchCompilePage = ():JSX.Element => {
-        let {uqList: list} = this.controller;
+    private batchCompilePage = (): JSX.Element => {
+        let { uqList: list } = this.controller;
         let right = <span>
-            <button className="btn btn-sm btn-link" onClick={this.selectAll}>全选</button> 
+            <button className="btn btn-sm btn-link" onClick={this.selectAll}>全选</button>
             <button className="btn btn-sm btn-link" onClick={this.unselectAll}>全清</button>
         </span>;
         let cnBtn = 'btn btn-sm btn-outline-primary mr-3';
@@ -133,14 +139,17 @@ export class ListPage extends VPage<CUq> {
             <span className="flex-grow-1">
                 <button className={cnBtn} onClick={this.test}>测试</button>
                 <button className={cnBtn} onClick={this.deploy}>发布</button>
-                <button className={cnBtn} onClick={this.testThoroughly}>彻底测试</button>
-                <button className={cnBtn} onClick={this.deployThoroughly}>彻底发布</button>
             </span>
             {right}
         </span>;
+        /*
+        根据uq编译器版本，自动决定是不是需要彻底编译
+        <button className={cnBtn} onClick={this.testThoroughly}>彻底测试</button>
+        <button className={cnBtn} onClick={this.deployThoroughly}>彻底发布</button>
+        */
 
         return <Page header="批量编译" footer={bar}>
-            <List ref={list=>this.list = list} items={list} item={{render: this.listCompileRow, onSelect: this.onSelect}} />
+            <List ref={list => this.list = list} items={list} item={{ render: this.listCompileRow, onSelect: this.onSelect }} />
         </Page>
     }
 }

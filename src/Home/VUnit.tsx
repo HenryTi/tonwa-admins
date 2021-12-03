@@ -9,20 +9,20 @@ import { UnitApp, Unit, unitCaption, DevObjBase } from 'model';
 //import { CUsers } from 'Users';
 import { ObjViewProps } from 'Dev/ObjViewProps';
 import AppsPage from 'Apps';
-import { AppController, CUq, busesProps, serversProps, ObjView } from 'Dev';
+import { busesProps, serversProps, ObjView } from 'Dev';
 import { NewApp } from 'Apps/new';
 //import { CAdmins } from 'Admins';
 
 const defaultIconClass = 'text-info';
 const devIconClass = 'text-success';
 
-interface  ActionBase {
+interface ActionBase {
     title: string | JSX.Element;
-    icon: string|JSX.Element;
-    onClick?: ()=>void;
+    icon: string | JSX.Element;
+    onClick?: () => void;
     className?: string;
     iconClassName?: string;
-    page?: new (props:any) => React.Component;
+    page?: new (props: any) => React.Component;
 }
 
 interface ActionItem extends ActionBase {
@@ -36,7 +36,7 @@ interface DevItem<T extends DevObjBase> extends ActionBase {
     objProps?: ObjViewProps<T>;
 }
 
-type Item = ActionItem|DevItem<DevObjBase>|string;
+type Item = ActionItem | DevItem<DevObjBase> | string;
 
 const rArrow = <FA name="angle-right" />;
 
@@ -45,7 +45,7 @@ export class VUnit extends VPage<CHome> {
         this.openPage(this.page);
     }
 
-    private appsAction:ActionItem = {
+    private appsAction: ActionItem = {
         title: '启停App',
         right: rArrow, //'增减',
         icon: 'play-circle-o',
@@ -59,7 +59,7 @@ export class VUnit extends VPage<CHome> {
         page: Members,
     };
     */
-    private newUsersAction:ActionItem = {
+    private newUsersAction: ActionItem = {
         title: 'App管理员',
         right: <><small className="text-muted">各App的管理员汇总</small> &nbsp; {rArrow}</>,
         icon: 'user-o',
@@ -105,17 +105,17 @@ export class VUnit extends VPage<CHome> {
     };
     */
 
-    private noneAction:ActionItem = {
+    private noneAction: ActionItem = {
         title: '请耐心等待分配任务',
         icon: 'hourglass-start',
     };
 
-    private buildItems():Item[] {
-        let {unit, dev} = store;
-        let {isAdmin, isOwner, isDev, type} = unit;
-        let items:Item[] = [];
+    private buildItems(): Item[] {
+        let { unit, dev } = store;
+        let { isAdmin, isOwner, isDev, type } = unit;
+        let items: Item[] = [];
         if (isOwner === 1 || isAdmin === 1) {
-			items.push(this.uqRolesAction);
+            items.push(this.uqRolesAction);
             items.push(this.adminsAction);
         }
         if ((type & 2) !== 0) {
@@ -126,17 +126,17 @@ export class VUnit extends VPage<CHome> {
 
         // 开发号
         if ((type & 1) !== 0) {
-            let {counts} = dev;
+            let { counts } = dev;
 
-            if (isAdmin ===1 || isDev === 1) {
+            if (isAdmin === 1 || isDev === 1) {
                 items.push('开发号管理')
             }
 
             if (isAdmin === 1) {
-                let developersAction:ActionItem = {
-                    title: '开发者', 
+                let developersAction: ActionItem = {
+                    title: '开发者',
                     right: rArrow,
-                    icon: 'user-o', 
+                    icon: 'user-o',
                     onClick: async () => await this.controller.onShowDevelopers(),
                     className: 'border-bottom',
                     iconClassName: devIconClass,
@@ -144,38 +144,38 @@ export class VUnit extends VPage<CHome> {
                 items.push(developersAction);
             }
 
-            if (isDev === 1 ) {
-                if (isOwner>0) {
-                    let appAction:DevItem<DevObjBase> = {
+            if (isDev === 1) {
+                if (isOwner > 0) {
+                    let appAction: DevItem<DevObjBase> = {
                         dev: true,
-                        title: 'APP', 
-                        count: counts && counts.app, 
-                        icon: 'tablet', 
+                        title: 'APP',
+                        count: counts && counts.app,
+                        icon: 'tablet',
                         onClick: () => this.controller.startApp(unit), // new AppController(undefined).start(unit.id),
                     };
                     items.push(appAction);
                 }
-                let uqAction:DevItem<DevObjBase> = {
+                let uqAction: DevItem<DevObjBase> = {
                     dev: true,
-                    title: 'UQ', 
-                    count: counts && counts.uq, 
-                    icon: 'database', 
+                    title: 'UQ',
+                    count: counts && counts.uq,
+                    icon: 'database',
                     onClick: () => this.controller.startUq(unit), //new CUq(undefined).start(unit),
                 };
-                let busAction:DevItem<DevObjBase> = {
+                let busAction: DevItem<DevObjBase> = {
                     dev: true,
-                    title: 'BUS', 
-                    count: counts && counts.bus, 
-                    icon: 'cogs', 
+                    title: 'BUS',
+                    count: counts && counts.bus,
+                    icon: 'cogs',
                     objProps: busesProps as any,
                 };
                 items.push(uqAction, busAction);
-                if (isOwner>0) {
-                    let serverAction:DevItem<DevObjBase> = {
+                if (isOwner > 0) {
+                    let serverAction: DevItem<DevObjBase> = {
                         dev: true,
-                        title: 'Server', 
-                        count: counts && counts.server, 
-                        icon: 'server', 
+                        title: 'Server',
+                        count: counts && counts.server,
+                        icon: 'server',
                         objProps: serversProps as any,
                     };
                     items.push(serverAction);
@@ -198,26 +198,26 @@ export class VUnit extends VPage<CHome> {
         */
         return items;
     }
-    private row = (item:Item, index:number):JSX.Element => {
+    private row = (item: Item, index: number): JSX.Element => {
         if (typeof item === 'string') {
-            return <div className="px-3 pt-3 pb-1 small text-muted cursor-default" style={{backgroundColor:'#f0f0f0'}}>{item}</div>;
+            return <div className="px-3 pt-3 pb-1 small text-muted cursor-default" style={{ backgroundColor: '#f0f0f0' }}>{item}</div>;
         }
-        let {iconClassName, className} = item;
+        let { iconClassName, className } = item;
         if (iconClassName === undefined) iconClassName = defaultIconClass;
-        let {dev} = item as DevItem<DevObjBase>;
-        let left:any, mid:any, r:any;
+        let { dev } = item as DevItem<DevObjBase>;
+        let left: any, mid: any, r: any;
         if (dev === true) {
-            let {icon, title, count} = item as DevItem<DevObjBase>;
-            left = typeof icon === 'string'?
+            let { icon, title, count } = item as DevItem<DevObjBase>;
+            left = typeof icon === 'string' ?
                 <FA className={iconClassName} name={icon} fixWidth={true} size="lg" />
                 :
                 icon;
             mid = title;
-            r = count>0 && <span>{count}</span>;
+            r = count > 0 && <span>{count}</span>;
         }
         else {
-            let {right, title, icon} = item as ActionItem;
-            left = typeof icon === 'string'? 
+            let { right, title, icon } = item as ActionItem;
+            left = typeof icon === 'string' ?
                 <FA className={iconClassName} name={icon} fixWidth={true} size="lg" /> :
                 item.icon;
             mid = title;
@@ -227,8 +227,8 @@ export class VUnit extends VPage<CHome> {
             <div className="px-3">{mid}</div>
         </LMR>;
     }
-    private rowClick = async (item:Item) => {
-        let {page:P, onClick} = item as ActionBase;
+    private rowClick = async (item: Item) => {
+        let { page: P, onClick } = item as ActionBase;
         if (P !== undefined) {
             nav.push(<P />);
             return;
@@ -237,19 +237,19 @@ export class VUnit extends VPage<CHome> {
             onClick();
             return;
         }
-        let {objProps} = item as DevItem<DevObjBase>;
+        let { objProps } = item as DevItem<DevObjBase>;
         if (objProps !== undefined) {
             return nav.push(<ObjView {...objProps} />);
         }
-        let {controller} = item as ActionItem;
+        let { controller } = item as ActionItem;
         if (controller) {
             await controller.start(store.unit);
             return;
         }
     }
 
-    private appItemRender(app:UnitApp, index:number) {
-        let {name, discription, icon, inUnit} = app;
+    private appItemRender(app: UnitApp, index: number) {
+        let { name, discription, icon, inUnit } = app;
         let ban = (inUnit === 0) &&
             <FA className="text-danger" name='ban' />;
         return <LMR className="px-3 py-2"
@@ -261,7 +261,7 @@ export class VUnit extends VPage<CHome> {
             </div>
         </LMR>;
     }
-    private appClick = async (app:UnitApp) => {
+    private appClick = async (app: UnitApp) => {
         await this.controller.showAppXAccount(app);
         /*
         nav.push(<Page header="App详细信息">
@@ -273,18 +273,18 @@ export class VUnit extends VPage<CHome> {
         nav.push(<NewApp />);
     }
     private appRender() {
-        let {apps} = store;
+        let { apps } = store;
         if (apps === undefined) return;
         if (apps.length === 0) return;
-        let {isAdmin, isOwner} = store.unit;
-        let right =  (isAdmin===1 || isOwner===1) && <button 
-            className='btn btn-success btn-sm' 
-            onClick={()=>this.newItem()}><FA name="plus" /></button>;
+        let { isAdmin, isOwner } = store.unit;
+        let right = (isAdmin === 1 || isOwner === 1) && <button
+            className='btn btn-success btn-sm'
+            onClick={() => this.newItem()}><FA name="plus" /></button>;
         return <>
             <LMR className="mt-4 mb-2 px-3 small text-muted align-items-end" right={right}>
                 <div className="align-self-end">App</div>
             </LMR>
-            <List items={store.apps} item={{render: this.appItemRender, onClick: this.appClick}} />
+            <List items={store.apps} item={{ render: this.appItemRender, onClick: this.appClick }} />
         </>
     }
 
@@ -293,7 +293,7 @@ export class VUnit extends VPage<CHome> {
     }
 
     private page = observer(() => {
-        let unit:Unit = store.unit;
+        let unit: Unit = store.unit;
         if (unit === undefined) {
             //console.log("admin render without unit");
             return null;
@@ -303,10 +303,10 @@ export class VUnit extends VPage<CHome> {
         if (items === undefined) {
             return <Page header="" />;
         }
-        let header:any, top:any;
+        let header: any, top: any;
         if (unit !== undefined) {
-            let {name, nick, icon, discription} = unit;
-            let title:string, vice:any;
+            let { name, nick, icon, discription } = unit;
+            let title: string, vice: any;
             if (nick) {
                 title = nick;
                 vice = <h6><small className='text-secondary'>{name}</small></h6>;
@@ -330,7 +330,7 @@ export class VUnit extends VPage<CHome> {
 
         return <Page header={header} logout={this.controller.logout}>
             {top}
-            {items.length>0 && <List items={items} item={{render:this.row, onClick:this.rowClick}} />}
+            {items.length > 0 && <List items={items} item={{ render: this.row, onClick: this.rowClick }} />}
             {this.appRender()}
         </Page>;
     })
@@ -338,16 +338,16 @@ export class VUnit extends VPage<CHome> {
 
 
 class UnitProps extends React.Component {
-    private schema:ItemSchema[] =[
-        {name: 'icon', type: 'image'} as ImageSchema,
-        {name: 'nick', type: 'string'} as StringSchema,
-        {name: 'discription', type: 'string'} as StringSchema,
+    private schema: ItemSchema[] = [
+        { name: 'icon', type: 'image' } as ImageSchema,
+        { name: 'nick', type: 'string' } as StringSchema,
+        { name: 'discription', type: 'string' } as StringSchema,
     ];
-    private uiSchema:UiSchema = {
+    private uiSchema: UiSchema = {
         items: {
-            nick: {widget:'text', label:'别名', placeholder:'好的别名更方便记忆'} as UiTextItem,
-            icon: {widget:'image', label:'标志图'} as UiImageItem,
-            discription: {widget:'text', label:'描述', placeholder:'简短清晰的描述'} as UiTextItem,
+            nick: { widget: 'text', label: '别名', placeholder: '好的别名更方便记忆' } as UiTextItem,
+            icon: { widget: 'image', label: '标志图' } as UiImageItem,
+            discription: { widget: 'text', label: '描述', placeholder: '简短清晰的描述' } as UiTextItem,
         }
     }
     /*
@@ -358,8 +358,8 @@ class UnitProps extends React.Component {
         await store.unitChangeProp('discription', value);
     }
     */
-    private onItemChanged = async (itemSchema:ItemSchema, newValue:any, preValue:any) => {
-        let {name} = itemSchema;
+    private onItemChanged = async (itemSchema: ItemSchema, newValue: any, preValue: any) => {
+        let { name } = itemSchema;
         //await userApi.userSetProp(name, newValue);
         await store.unitChangeProp(name, newValue);
         //this.data[name] = newValue;
@@ -368,18 +368,18 @@ class UnitProps extends React.Component {
     }
     //<PropGrid rows={this.rows} values={store.unit} alignValue="right" />
     render() {
-        let unit:Unit = store.unit;
-        let {isRoot, isOwner, readMe} = unit;
+        let unit: Unit = store.unit;
+        let { isRoot, isOwner, readMe } = unit;
         let caption = unitCaption(unit);
 
-        let divReadMe = readMe && <div className="p-3" 
-            dangerouslySetInnerHTML={{__html:readMe}}></div>;
+        let divReadMe = readMe && <div className="p-3"
+            dangerouslySetInnerHTML={{ __html: readMe }}></div>;
 
         return <Page header={caption + '详情'}>
             <Edit schema={this.schema} uiSchema={this.uiSchema}
                 data={store.unit}
                 onItemChanged={this.onItemChanged}
-                stopEdit={!(isRoot>0 && isOwner>0)} />
+                stopEdit={!(isRoot > 0 && isOwner > 0)} />
             {divReadMe}
         </Page>;
     }

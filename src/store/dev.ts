@@ -1,9 +1,8 @@
-import {observable} from 'mobx';
-import _, { delay } from 'lodash';
-import {devApi} from '../api';
-import {Store} from './store';
+import { observable } from 'mobx';
+import _ from 'lodash';
+import { devApi } from '../api';
+import { Store } from './store';
 import { DevObjBase, DevApp, DevUQ, DevBus, DevServer, DevService } from 'model';
-import { parse } from 'path';
 
 interface Counts {
     uq: number;
@@ -15,9 +14,9 @@ interface Counts {
 }
 
 export abstract class ObjItems<T extends DevObjBase> {
-    protected store:Store;
-    protected dev:Dev;
-    constructor(store:Store, dev:Dev) {
+    protected store: Store;
+    protected dev: Dev;
+    constructor(store: Store, dev: Dev) {
         this.store = store;
         this.dev = dev;
     }
@@ -25,13 +24,13 @@ export abstract class ObjItems<T extends DevObjBase> {
     @observable items: T[] = undefined;
     @observable cur: T = undefined;
 
-    async load():Promise<void> {
-         let ret = await this._load();
-         this.items = ret;
+    async load(): Promise<void> {
+        let ret = await this._load();
+        this.items = ret;
     }
-    protected abstract _load():Promise<T[]>;
-    async saveCur(item:T):Promise<boolean> {
-        let values:any = {};
+    protected abstract _load(): Promise<T[]>;
+    async saveCur(item: T): Promise<boolean> {
+        let values: any = {};
         if (this.cur !== undefined) {
             _.assign(values, this.cur, item);
         }
@@ -53,11 +52,11 @@ export abstract class ObjItems<T extends DevObjBase> {
         }
         return true;
     }
-    async check(item:T):Promise<boolean> {
+    async check(item: T): Promise<boolean> {
         return true;
     }
-    async save(item:T):Promise<T> {
-        let values:any = {};
+    async save(item: T): Promise<T> {
+        let values: any = {};
         _.assign(values, item);
 
         values.unit = item.unit = this.store.unit.id;
@@ -66,20 +65,20 @@ export abstract class ObjItems<T extends DevObjBase> {
         values.id = id;
         return values;
     }
-    protected abstract _save(item:T):Promise<number>;
-    async del():Promise<void> {
+    protected abstract _save(item: T): Promise<number>;
+    async del(): Promise<void> {
         let c = this.cur;
         if (c === undefined) return;
         let id = c.id;
         await this._del(c);
         if (this.items === undefined) return;
         let index = this.items.findIndex(v => v.id === id);
-        if (index>=0) {
+        if (index >= 0) {
             this.items.splice(index, 1);
             this._dec();
         }
     }
-    protected abstract _del(item:T):Promise<void>;
+    protected abstract _del(item: T): Promise<void>;
     protected abstract _inc();
     protected abstract _dec();
 }
@@ -91,10 +90,10 @@ class Apps extends ObjItems<DevApp> {
     protected async _load() {
         return await devApi.apps(this.store.unit.id);
     }
-    protected async _save(item:DevApp):Promise<number> {
+    protected async _save(item: DevApp): Promise<number> {
         return await devApi.saveApp(item);
     }
-    protected async _del(item:DevApp):Promise<void> {
+    protected async _del(item: DevApp): Promise<void> {
         await devApi.delApp(this.store.unit.id, item.id);
     }
     protected _inc() { this.dev.counts.app++; }
@@ -104,7 +103,7 @@ class Apps extends ObjItems<DevApp> {
         let ret = await devApi.loadAppUqs(this.cur.id);
         this.uqs = ret;
     }
-    public async searchUq(key:string) {
+    public async searchUq(key: string) {
         this.searchedUqs = await devApi.searchUq(this.store.unit.id, key, 0, searchPageSize);
     }
     /*
@@ -145,14 +144,14 @@ class Uqs extends ObjItems<DevUQ> {
         let ret = await devApi.uqs(this.store.unit.id);
         return ret;
     }
-    protected async _save(item:DevUQ):Promise<number> {
+    protected async _save(item: DevUQ): Promise<number> {
         //let {access} = item;
         //if (!access) access = "*';
         //let parts = access.split(',').map(v => v.trim()).filter(v => v!=='');
         //item.access = parts.join(',');
         return await devApi.saveUq(item);
     }
-    protected async _del(item:DevUQ):Promise<void> {
+    protected async _del(item: DevUQ): Promise<void> {
         await devApi.delUq(this.store.unit.id, item.id);
     }
     protected _inc() { this.dev.counts.uq++; }
@@ -162,45 +161,44 @@ class Uqs extends ObjItems<DevUQ> {
 class Buses extends ObjItems<DevBus> {
     protected async _load() {
         let ret = await devApi.buses(this.store.unit.id);
-		for (let item of ret) {
-			let {schema, source} = item;
-			if (!source) item.source = schema;	
-		}
+        for (let item of ret) {
+            let { schema, source } = item;
+            if (!source) item.source = schema;
+        }
         return ret;
     }
-    protected async _save(item:DevBus):Promise<number> {
+    protected async _save(item: DevBus): Promise<number> {
         return await devApi.saveBus(item);
     }
-    protected async _del(item:DevBus):Promise<void> {
+    protected async _del(item: DevBus): Promise<void> {
         await devApi.delBus(this.store.unit.id, item.id);
     }
     protected _inc() { this.dev.counts.bus++; }
     protected _dec() { this.dev.counts.bus--; }
-	private checkBusName(item:DevBus, busName:string):boolean {
-		let parts = busName.split('/');
-		switch (parts.length) {
-			default:
-				alert(`'${busName}'不符合bus名称的格式: 所有者/名称`); 
-				return false;
-			case 1:
-				if (parts[0].toLowerCase() !== item.name) {
-					alert(`$prop '${busName}' in schema 应该跟名称一致`); 
-					return false;
-				}
-				break;
-			case 2:
-				if (parts[0].toLowerCase() !== this.store.unit.name.toLowerCase() 
-					|| parts[1].toLowerCase() !== item.name.toLowerCase())
-				{
-					alert(`$prop '${busName}' in schema 应该跟 所有者/名称 一致`); 
-					return false;
-				}
-				break;
-		}
-		return true;
-	}
-    async check(item:DevBus):Promise<boolean> {
-        let {source} = item;
+    private checkBusName(item: DevBus, busName: string): boolean {
+        let parts = busName.split('/');
+        switch (parts.length) {
+            default:
+                alert(`'${busName}'不符合bus名称的格式: 所有者/名称`);
+                return false;
+            case 1:
+                if (parts[0].toLowerCase() !== item.name) {
+                    alert(`$prop '${busName}' in schema 应该跟名称一致`);
+                    return false;
+                }
+                break;
+            case 2:
+                if (parts[0].toLowerCase() !== this.store.unit.name.toLowerCase()
+                    || parts[1].toLowerCase() !== item.name.toLowerCase()) {
+                    alert(`$prop '${busName}' in schema 应该跟 所有者/名称 一致`);
+                    return false;
+                }
+                break;
+        }
+        return true;
+    }
+    async check(item: DevBus): Promise<boolean> {
+        let { source } = item;
         try {
             let bus = JSON.parse(source);
             for (let i in bus) {
@@ -210,17 +208,17 @@ class Buses extends ObjItems<DevBus> {
                     return false;
                 }
                 switch (typeof face) {
-					case 'object': break;
-					case 'string':
-						if (i === '$') {
-							if (this.checkBusName(item, face) === false) return false;
-						}
-						delete bus[i];
-						continue;
-					default:
-						delete bus[i];
-						continue;
-					/*
+                    case 'object': break;
+                    case 'string':
+                        if (i === '$') {
+                            if (this.checkBusName(item, face) === false) return false;
+                        }
+                        delete bus[i];
+                        continue;
+                    default:
+                        delete bus[i];
+                        continue;
+                    /*
                     case 'function':
                         alert(`face ${i} is function，不接受function`);
                         return false;
@@ -229,7 +227,7 @@ class Buses extends ObjItems<DevBus> {
                     case 'number':
                         alert(`face ${i} 应该是数组或者对象`);
                         return false;
-					*/
+                    */
                 }
                 if (Array.isArray(face) === true) {
                     if (checkBusFace(face, bus) === false) return false;
@@ -238,19 +236,19 @@ class Buses extends ObjItems<DevBus> {
                     if (checkBusQuery(face, bus) === false) return false;
                 }
             }
-			for (let i in bus) {
-				let face = bus[i];
-				if (!face) continue;
-				if (faceReplaceStringWithFace(face, bus, []) === false) {
-					alert(`face ${i} 包含了循环引用`); 
-					return false;
-				};
-			}
-			item.schema = JSON.stringify(bus);
-			if (!item.owner) {
-				item.owner = this.store.unit.name;
-			}
-			return true;
+            for (let i in bus) {
+                let face = bus[i];
+                if (!face) continue;
+                if (faceReplaceStringWithFace(face, bus, []) === false) {
+                    alert(`face ${i} 包含了循环引用`);
+                    return false;
+                };
+            }
+            item.schema = JSON.stringify(bus);
+            if (!item.owner) {
+                item.owner = this.store.unit.name;
+            }
+            return true;
         }
         catch (err) {
             alert((err as any).message);
@@ -261,7 +259,7 @@ class Buses extends ObjItems<DevBus> {
 
 const paramTypes = ['id', 'number', 'string'];
 const busTypes = [...paramTypes, 'array'];
-function refNameOk(faceName:string, bus:any):boolean {
+function refNameOk(faceName: string, bus: any): boolean {
     let face = bus[faceName];
     if (face === undefined) {
         alert(`face ${faceName} not defined`);
@@ -271,20 +269,20 @@ function refNameOk(faceName:string, bus:any):boolean {
         alert(`face ${faceName} is referenced, bus is not array`);
         return false;
     }
-	return true;
+    return true;
     //return refArrayOk(face as any[], bus);
 }
 
-function refArrayOk(items:any[], bus:any):boolean {
+function refArrayOk(items: any[], bus: any): boolean {
     for (let item of items) {
         let type: string;
         if (typeof item === 'string') {
             let pos = item.indexOf(':');
-            if (pos<=0) {
+            if (pos <= 0) {
                 alert('type is not defined');
                 return false;
             }
-            type = item.substr(pos+1).trim();
+            type = item.substr(pos + 1).trim();
         }
         else {
             type = item.type;
@@ -297,115 +295,115 @@ function refArrayOk(items:any[], bus:any):boolean {
     return true;
 }
 
-function faceReplaceStringWithFace(face: any[], bus:any, arr:any[]):boolean {
-	let len = face.length;
-	let hasFaceReplace:boolean = false;
-	let newFace = [];
-	for (let i=0; i<len; i++) {
-		let field = face[i];
-		if (typeof field !== 'string') {
-			pushFaceField(newFace, field);
-			continue;
-		}
-		hasFaceReplace = true;
-		let faceFromName = bus[field];
-		if (!faceFromName) continue;
-		if (arr.findIndex(v => v === faceFromName) >= 0) return false;
-		if (faceReplaceStringWithFace(faceFromName, bus, [face]) === false) return false;
-		for (let f of faceFromName) {
-			pushFaceField(newFace, f);
-		}
-	}
-	if (hasFaceReplace === true) {
-		face.splice(0, face.length, ...newFace);
-	}
-	return true;
+function faceReplaceStringWithFace(face: any[], bus: any, arr: any[]): boolean {
+    let len = face.length;
+    let hasFaceReplace: boolean = false;
+    let newFace = [];
+    for (let i = 0; i < len; i++) {
+        let field = face[i];
+        if (typeof field !== 'string') {
+            pushFaceField(newFace, field);
+            continue;
+        }
+        hasFaceReplace = true;
+        let faceFromName = bus[field];
+        if (!faceFromName) continue;
+        if (arr.findIndex(v => v === faceFromName) >= 0) return false;
+        if (faceReplaceStringWithFace(faceFromName, bus, [face]) === false) return false;
+        for (let f of faceFromName) {
+            pushFaceField(newFace, f);
+        }
+    }
+    if (hasFaceReplace === true) {
+        face.splice(0, face.length, ...newFace);
+    }
+    return true;
 }
 
-function pushFaceField(face: any[], field:any) {
-	for (let f of face) {
-		let {name:fn} = f;
-		let {name, type} = field;
-		if (fn.toLowerCase() === name.toLowerCase()) {
-			f.type = type;
-			return;
-		}
-	}
-	face.push(field);
+function pushFaceField(face: any[], field: any) {
+    for (let f of face) {
+        let { name: fn } = f;
+        let { name, type } = field;
+        if (fn.toLowerCase() === name.toLowerCase()) {
+            f.type = type;
+            return;
+        }
+    }
+    face.push(field);
 }
 
-function parseField(str:string):object|string|undefined {
-	if (str === undefined) return undefined;
-	let p = str.indexOf('--');
-	if (p >= 0) {
-		str = str.substr(0, p);
-	}
-	str = str.trim();
-	if (str.length === 0) return undefined;
-	let parts = str.split(':');
-	let len = parts.length;
-	if (len === 0) return undefined;
-	if (len === 1) return str;
-	//"detail: order-detail -- { name: detail, type: array, fields: order-detail }"
-	let name = parts[0].trim();
-	let type = parts[1].trim();
-	if (name.length === 0) return undefined;
-	let fields:string = undefined;
-	switch (type) {
-		default: 
-			fields = type;
-			type = 'array';
-			break;
-		case 'id':
-		case 'number':
-		case 'string': break;
-	}
-	return {name, type, fields};
+function parseField(str: string): object | string | undefined {
+    if (str === undefined) return undefined;
+    let p = str.indexOf('--');
+    if (p >= 0) {
+        str = str.substr(0, p);
+    }
+    str = str.trim();
+    if (str.length === 0) return undefined;
+    let parts = str.split(':');
+    let len = parts.length;
+    if (len === 0) return undefined;
+    if (len === 1) return str;
+    //"detail: order-detail -- { name: detail, type: array, fields: order-detail }"
+    let name = parts[0].trim();
+    let type = parts[1].trim();
+    if (name.length === 0) return undefined;
+    let fields: string = undefined;
+    switch (type) {
+        default:
+            fields = type;
+            type = 'array';
+            break;
+        case 'id':
+        case 'number':
+        case 'string': break;
+    }
+    return { name, type, fields };
 }
 
-function checkBusFace(face: any[], bus:any):boolean {
+function checkBusFace(face: any[], bus: any): boolean {
     if (Array.isArray(face) === false) {
         alert('face must be array');
         return false;
     }
-	let len = face.length;
-	let delArr:number[] = [];
-    for (let i=0; i<len; i++) {
-		let field = face[i];
-		switch (typeof field) {
-			default:
-				alert('face中的项，只能是object或者字符串');
-				return false;
-			case 'object':
-				if (field['-']) delete field['-'];
-				if (field['--']) delete field['--'];
-				break;
-			case 'string':
-				let parsed = parseField(field);
-				if (parsed === undefined) {
-					delArr.push(i);
-					continue;
-				}
-				if (typeof parsed === 'string') {
-					let faceFromName = bus[parsed];
-					if (!faceFromName) {
-						alert(`'${field}' 没有定义`);
-						return false;
-					}
-					face.splice(i, 1, parsed);
-					continue;
-				}
-				field = parsed;
-				face.splice(i, 1, parsed);
-				break;
-		}
-        let {type} = field;
+    let len = face.length;
+    let delArr: number[] = [];
+    for (let i = 0; i < len; i++) {
+        let field = face[i];
+        switch (typeof field) {
+            default:
+                alert('face中的项，只能是object或者字符串');
+                return false;
+            case 'object':
+                if (field['-']) delete field['-'];
+                if (field['--']) delete field['--'];
+                break;
+            case 'string':
+                let parsed = parseField(field);
+                if (parsed === undefined) {
+                    delArr.push(i);
+                    continue;
+                }
+                if (typeof parsed === 'string') {
+                    let faceFromName = bus[parsed];
+                    if (!faceFromName) {
+                        alert(`'${field}' 没有定义`);
+                        return false;
+                    }
+                    face.splice(i, 1, parsed);
+                    continue;
+                }
+                field = parsed;
+                face.splice(i, 1, parsed);
+                break;
+        }
+        let { type } = field;
         if (type === undefined) {
             alert('type not defined');
             return false;
         }
         if (type === 'array') {
-            let {fields} = field;
+            let { fields } = field;
             if (refNameOk(fields, bus) === false) {
                 return false;
             }
@@ -420,14 +418,14 @@ function checkBusFace(face: any[], bus:any):boolean {
             return false;
         }
     }
-	len = delArr.length;
-	for (let i=len-1; i>=0; i--) {
-		face.splice(delArr[i], 1);
-	}
+    len = delArr.length;
+    for (let i = len - 1; i >= 0; i--) {
+        face.splice(delArr[i], 1);
+    }
     return true;
 }
 
-function checkBusQuery(face: any, bus:any):boolean {
+function checkBusQuery(face: any, bus: any): boolean {
     for (let i in face) {
         let item = face[i];
         switch (i) {
@@ -454,7 +452,7 @@ function checkBusQuery(face: any, bus:any):boolean {
     return true;
 }
 
-function checkBusQueryParam(param: any, bus:any):boolean {
+function checkBusQueryParam(param: any, bus: any): boolean {
     if (param === null || param === undefined) return true;
     switch (typeof param) {
         case 'string':
@@ -462,7 +460,7 @@ function checkBusQueryParam(param: any, bus:any):boolean {
         default:
             if (Array.isArray(param)) {
                 if (refArrayOk(param, bus) === false) return false;
-                for (let i=0; i<param.length; i++) {
+                for (let i = 0; i < param.length; i++) {
                     let item = param[i];
                     if (typeof item === 'string') {
                         param[i] = parseField(item);
@@ -480,10 +478,10 @@ class Servers extends ObjItems<DevServer> {
     protected async _load() {
         return await devApi.servers(this.store.unit.id);
     }
-    protected async _save(item:DevServer):Promise<number> {
+    protected async _save(item: DevServer): Promise<number> {
         return await devApi.saveServer(item);
     }
-    protected async _del(item:DevServer):Promise<void> {
+    protected async _del(item: DevServer): Promise<void> {
         await devApi.delServer(this.store.unit.id, item.id);
     }
     protected _inc() { this.dev.counts.server++; }
@@ -493,15 +491,15 @@ class Services extends ObjItems<DevService> {
     protected async _load() {
         return await devApi.services(this.store.unit.id);
     }
-    protected async _save(item:DevService):Promise<number> {
+    protected async _save(item: DevService): Promise<number> {
         return await devApi.saveService(item);
     }
-    protected async _del(item:DevService):Promise<void> {
+    protected async _del(item: DevService): Promise<void> {
         await devApi.delService(this.store.unit.id, item.id);
     }
     protected _inc() { this.dev.counts.service++; }
     protected _dec() { this.dev.counts.service--; }
-    async changeProp(prop:string, value:any):Promise<number> {
+    async changeProp(prop: string, value: any): Promise<number> {
         let ret = await devApi.changeServiceProp(this.store.unit.id, this.cur.id, prop, value);
         switch (prop) {
             case 'url': this.cur.url = value; break;
@@ -513,20 +511,20 @@ class Services extends ObjItems<DevService> {
         }
         return ret;
     }
-    async loadUqServices(uq:number):Promise<void> {
+    async loadUqServices(uq: number): Promise<void> {
         let ret = await devApi.loadUqServices(this.store.unit.id, uq);
         this.items = ret[0];
     }
 }
 
 const searchPageSize = 50;
-type Search = (unit:number,key:string,pageStart:number,pageSize:number)=>Promise<any[]>;
+type Search = (unit: number, key: string, pageStart: number, pageSize: number) => Promise<any[]>;
 class SearchItems<T extends DevObjBase> {
-    private store:Store;
-    private dev:Dev;
-    private search:(unit:number,key:string,pageStart:number,pageSize:number)=>Promise<any[]>;
+    private store: Store;
+    private dev: Dev;
+    private search: (unit: number, key: string, pageStart: number, pageSize: number) => Promise<any[]>;
 
-    constructor(store:Store, dev:Dev, search:Search) {
+    constructor(store: Store, dev: Dev, search: Search) {
         this.store = store;
         this.dev = dev;
         this.search = search;
@@ -537,7 +535,7 @@ class SearchItems<T extends DevObjBase> {
     private key: string;
     private pageStart = 0;
 
-    async first(key:string) {
+    async first(key: string) {
         this.key = key;
         this.items = undefined;
         this.allLoaded = false;
@@ -545,7 +543,7 @@ class SearchItems<T extends DevObjBase> {
         await this.more();
     }
 
-    async more():Promise<void> {
+    async more(): Promise<void> {
         if (this.allLoaded === true) return;
         let ret = await this.search(this.store.unit.id, this.key, this.pageStart, searchPageSize);
         let len = ret.length;
@@ -558,7 +556,7 @@ class SearchItems<T extends DevObjBase> {
             this.allLoaded = true;
         }
         if (len > 0) {
-            this.pageStart = ret[len-1].id;
+            this.pageStart = ret[len - 1].id;
             if (this.items === undefined)
                 this.items = ret;
             else
@@ -571,8 +569,8 @@ class SearchItems<T extends DevObjBase> {
 }
 
 export class Dev {
-    private store:Store;
-    constructor(store:Store) {
+    private store: Store;
+    constructor(store: Store) {
         this.store = store;
         this.apps = new Apps(store, this);
         this.uqs = new Uqs(store, this);
@@ -585,19 +583,19 @@ export class Dev {
         this.searchServer = new SearchItems<DevServer>(store, this, devApi.searchServer.bind(devApi));
     }
 
-    @observable counts:Counts = undefined;
-    apps:Apps = undefined;
-    uqs:Uqs = undefined;
-    buses:Buses = undefined;
-    servers:Servers = undefined;
-    services:Services = undefined;
+    @observable counts: Counts = undefined;
+    apps: Apps = undefined;
+    uqs: Uqs = undefined;
+    buses: Buses = undefined;
+    servers: Servers = undefined;
+    services: Services = undefined;
 
-    searchApp:SearchItems<DevApp> = undefined;
-    searchUq:SearchItems<DevUQ> = undefined;
-    searchServer:SearchItems<DevServer> = undefined;
-    
+    searchApp: SearchItems<DevApp> = undefined;
+    searchUq: SearchItems<DevUQ> = undefined;
+    searchServer: SearchItems<DevServer> = undefined;
+
     async loadCounts(): Promise<void> {
-        let {unit} = this.store;
+        let { unit } = this.store;
         this.counts = await devApi.counts(unit.id);
     }
 }
