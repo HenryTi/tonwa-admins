@@ -223,10 +223,13 @@ export class UqDeploy extends React.Component<UqActionProps> {
     render() {
         let { caption, compile, /*fast, thoroughly, */description } = this.options;
         return <Page header={caption + ' - ' + this.props.uq.name}>
-            <div className="m-3 bg-white p-3">
+            <div className="bg-white p-3">
                 <ul className="my-3">{description}</ul>
-                <div className="d-flex p-3">
-                    <button className="btn btn-success" type="submit" onClick={this.onCompile}>{compile}</button>
+                <div className="d-flex p-3 justify-content-center">
+                    <button className="btn btn-primary w-8c"
+                        type="submit" onClick={this.onCompile}>
+                        {compile}
+                    </button>
                 </div>
             </div>
         </Page>;
