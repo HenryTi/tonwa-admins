@@ -26,7 +26,7 @@ export class ListPage extends VPage<CUq> {
             { icon: 'plus', caption: '批量编译', action: this.batchCompile },
         ];
         let right = isOwner > 0 &&
-            <DropdownActions className="btn-primary mr-2 align-self-center" icon="bars" actions={actions}>
+            <DropdownActions className="btn-primary me-2 align-self-center" icon="bars" actions={actions}>
                 <button className='btn btn-primary btn-sm' onClick={() => this.newItem()}><FA name="plus" /></button>
             </DropdownActions>
         return <Page header="UQ" right={right}>
@@ -134,7 +134,7 @@ export class ListPage extends VPage<CUq> {
             <button className="btn btn-sm btn-link" onClick={this.selectAll}>全选</button>
             <button className="btn btn-sm btn-link" onClick={this.unselectAll}>全清</button>
         </span>;
-        let cnBtn = 'btn btn-sm btn-outline-primary mr-3';
+        let cnBtn = 'btn btn-sm btn-outline-primary me-3';
         let bar = <span className="px-3 py-1 d-flex w-100">
             <span className="flex-grow-1">
                 <button className={cnBtn} onClick={this.test}>测试</button>

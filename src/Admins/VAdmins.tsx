@@ -20,13 +20,13 @@ export class VAdmins extends VPage<CAdmins> {
     private onNewFellow = () => {
         //nav.push(<NewFellow />);
     }
-    private onItemClick = (ua:UnitAdmin) => {
+    private onItemClick = (ua: UnitAdmin) => {
         //store.admins.cur = ua;
         this.controller.admins.cur = ua;
         this.openVPage(VEditAdmin);
         //nav.push(<EditAdmin />);
     }
-    private onItemSelect = (ua:UnitAdmin, isSelected:boolean, anySelected:boolean) => {
+    private onItemSelect = (ua: UnitAdmin, isSelected: boolean, anySelected: boolean) => {
         this.disableDel = !anySelected;
     }
 
@@ -42,12 +42,12 @@ export class VAdmins extends VPage<CAdmins> {
         await this.controller.delAdmins(this.list.selectedItems);
     }
 
-    private row = ({icon, name, nick}:UnitAdmin) => {
-        let content = nick?
+    private row = ({ icon, name, nick }: UnitAdmin) => {
+        let content = nick ?
             <><b>{nick}</b> &nbsp; <small className="text-muted">{name}</small></>
             :
             <b>{name}</b>;
-        let left = <Image className="w-2-5c h-2-5c" src={icon} />; 
+        let left = <Image className="w-2-5c h-2-5c" src={icon} />;
         return <LMR className="py-2 px-3 align-items-stretch" left={left}>
             <div className="px-3">{content}</div>
         </LMR>;
@@ -55,12 +55,12 @@ export class VAdmins extends VPage<CAdmins> {
 
     onAddAdmin = () => {
         this.openVPage(VAddAdmin);
-    } 
+    }
 
     private page = observer(() => {
-        let {admins} = this.controller;
-        let right = <button 
-            className="btn btn-sm btn-success mr-2 align-self-center"
+        let { admins } = this.controller;
+        let right = <button
+            className="btn btn-sm btn-success me-2 align-self-center"
             onClick={this.onAddAdmin}><FA name="plus" /></button>;
         /*
         let showOwners = false, showAdmins = false;
@@ -96,11 +96,11 @@ export class VAdmins extends VPage<CAdmins> {
         }
         */
         let adminsView = <List ref={(list) => this.list = list}
-            className="my-1" items={admins.admins} 
+            className="my-1" items={admins.admins}
             none='[无]'
-            item={{render: this.row, onSelect: this.onItemSelect}}
-            />;
-        let cnBtn = 'btn btn-sm btn-outline-info mr-1';
+            item={{ render: this.row, onSelect: this.onItemSelect }}
+        />;
+        let cnBtn = 'btn btn-sm btn-outline-info me-1';
         let buttons = admins.admins.length > 0 && <div className="pl-3">
             <button className={cnBtn} onClick={this.onSelectAll}>全选</button>
             <button className={cnBtn} onClick={this.onClearAll}>全清</button>

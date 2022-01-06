@@ -11,8 +11,8 @@ export interface SearchBoxProps {
     maxLength?: number;
     size?: 'sm' | 'md' | 'lg';
     inputClassName?: string;
-    onSearch: (key:string)=>Promise<void>;
-    onFocus?: ()=>void;
+    onSearch: (key: string) => Promise<void>;
+    onFocus?: () => void;
     allowEmptySearch?: boolean;
 }
 
@@ -50,9 +50,9 @@ export class SearchBox extends React.Component<SearchBoxProps> { //}, SearchBoxS
         if (this.input) this.input.value = '';
     }
     render() {
-        let {className, inputClassName, onFocus,
-            label, placeholder, buttonText, maxLength, size} = this.props;
-        let inputSize:string;
+        let { className, inputClassName, onFocus,
+            label, placeholder, buttonText, maxLength, size } = this.props;
+        let inputSize: string;
         switch (size) {
             default:
             case 'sm': inputSize = 'input-group-sm'; break;
@@ -61,8 +61,8 @@ export class SearchBox extends React.Component<SearchBoxProps> { //}, SearchBoxS
         }
         return <form className={className} onSubmit={this.onSubmit} >
             <div className={classNames("input-group", inputSize)}>
-                {label && <div className="input-group-addon align-self-center mr-2">{label}</div>}
-                <input ref={v=>this.input=v} onChange={this.onChange}
+                {label && <div className="input-group-addon align-self-center me-2">{label}</div>}
+                <input ref={v => this.input = v} onChange={this.onChange}
                     type="text"
                     name="key"
                     onFocus={onFocus}
@@ -75,7 +75,7 @@ export class SearchBox extends React.Component<SearchBoxProps> { //}, SearchBoxS
                         type="submit"
                         disabled={this.disabled}>
                         <i className='fa fa-search' />
-                        <i className="fa"/>
+                        <i className="fa" />
                         {buttonText}
                     </button>
                 </div>

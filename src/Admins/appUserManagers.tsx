@@ -24,7 +24,7 @@ class VAppUserManagers extends VPage<CAppUserManagers> {
     }
 
     private page = () => {
-        let right = <button className="btn btn-sm btn-success align-self-center mr-1"
+        let right = <button className="btn btn-sm btn-success align-self-center me-1"
             onClick={this.controller.showAddNewPage}>
             <FA name="plus" />
         </button>;

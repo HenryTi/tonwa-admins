@@ -16,26 +16,26 @@ export class SearchUqPage extends VPage<AppController> {
         this.openPage(this.page);
     }
 
-    private onSearch = async (key:string) => {
+    private onSearch = async (key: string) => {
         let pageStart = 0;
         let pageSize = 100;
         this.uqs = await this.controller.searchUq(key, pageStart, pageSize);
     }
 
     private page = observer(() => {
-        let {onUq} = this.controller;
-        let header = <SearchBox className="w-100 mx-1" 
+        let { onUq } = this.controller;
+        let header = <SearchBox className="w-100 mx-1"
             label="选择关联UQ "
             onSearch={this.onSearch}
-            placeholder="搜索UQ名字" 
+            placeholder="搜索UQ名字"
             maxLength={100} />;
         return <Page back="close" header={header}>
-            <List items={this.uqs} item={{render: this.row, onClick: onUq}} />
+            <List items={this.uqs} item={{ render: this.row, onClick: onUq }} />
         </Page>;
     });
 
     private row = (uq: DevUQ) => {
-        let {owner, name, discription} = uq;
+        let { owner, name, discription } = uq;
         return <LMR className="py-2 px-3" right={discription}>
             <div>{owner} / {name}</div>
         </LMR>;
@@ -104,7 +104,7 @@ class Uqs extends React.Component {
         }
         return <div className="d-flex justify-content-start py-1 px-3">
             <div className="align-self-center">{uq.name + ' - ' + uq.discription}</div>
-            <footer className="ml-auto">{btnContent}</footer>
+            <footer className="ms-auto">{btnContent}</footer>
         </div>
     }
     render() {

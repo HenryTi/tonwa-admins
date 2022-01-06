@@ -9,16 +9,16 @@ import { ContextRule } from './rules';
 import { observer } from 'mobx-react';
 
 export abstract class Context {
-    private subContexts:{[name:string]:{[rowKey:string]:Context}};
+    private subContexts: { [name: string]: { [rowKey: string]: Context } };
     readonly form: Form;
     readonly uiSchema: UiSchema;
     readonly initData: any;
     readonly inNode: boolean;           // true: 在</> 流中定义Field
-    readonly widgets: {[name:string]: Widget} = {};
+    readonly widgets: { [name: string]: Widget } = {};
     readonly rules: ContextRule[];
     readonly isRow: boolean;
     @observable errors: string[] = [];
-    @observable errorWidgets:Widget[] = [];
+    @observable errorWidgets: Widget[] = [];
 
     constructor(form: Form, uiSchema: UiSchema, data: any, inNode: boolean, isRow: boolean) {
         this.form = form;
@@ -27,7 +27,7 @@ export abstract class Context {
         this.inNode = inNode;
         this.isRow = isRow;
         if (uiSchema !== undefined) {
-            let {rules} = uiSchema;
+            let { rules } = uiSchema;
             if (rules !== undefined) {
                 this.rules = [];
                 if (Array.isArray(rules) === false)
@@ -45,40 +45,40 @@ export abstract class Context {
         return arrRowContexts;
     }
 
-    abstract get data():any;
-    abstract getItemSchema(itemName:string):ItemSchema;
-    abstract getUiItem(itemName:string):UiItem;
-    get arrName():string {return undefined}
-    getValue(itemName:string):any {return this.initData[itemName]}
-    setValue(itemName:string, value:any) {
+    abstract get data(): any;
+    abstract getItemSchema(itemName: string): ItemSchema;
+    abstract getUiItem(itemName: string): UiItem;
+    get arrName(): string { return undefined }
+    getValue(itemName: string): any { return this.initData[itemName] }
+    setValue(itemName: string, value: any) {
         this.initData[itemName] = value;
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.setValue(value);
     }
-    getDisabled(itemName:string):boolean {
+    getDisabled(itemName: string): boolean {
         let widget = this.widgets[itemName];
         if (widget !== undefined) return widget.getDisabled();
         return undefined;
     }
-    setDisabled(itemName:string, value:boolean) {
+    setDisabled(itemName: string, value: boolean) {
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.setDisabled(value);
     }
-    getReadOnly(itemName:string):boolean {
+    getReadOnly(itemName: string): boolean {
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.getReadOnly();
         return undefined;
     }
-    setReadOnly(itemName:string, value:boolean) {
+    setReadOnly(itemName: string, value: boolean) {
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.setReadOnly(value);
     }
-    getVisible(itemName:string):boolean {
+    getVisible(itemName: string): boolean {
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.getVisible();
         return undefined;
     }
-    setVisible(itemName:string, value:boolean) {
+    setVisible(itemName: string, value: boolean) {
         let widget = this.widgets[itemName];
         if (widget !== undefined) widget.setVisible(value);
     }
@@ -93,7 +93,7 @@ export abstract class Context {
             console.error(err);
             return;
         }
-        let {onButtonClick} = this.form.props;
+        let { onButtonClick } = this.form.props;
         if (onButtonClick === undefined) {
             alert(`button ${buttonName} clicked. you should define form onButtonClick`);
             return;
@@ -144,7 +144,7 @@ export abstract class Context {
         }
     }
 
-    setError(itemName:string, error:string) {
+    setError(itemName: string, error: string) {
         let widget = this.widgets[itemName];
         if (widget === undefined) return;
         widget.setContextError(error);
@@ -175,16 +175,16 @@ export abstract class Context {
         this.checkContextRules();
     }
 
-    addErrorWidget(widget:Widget) {
+    addErrorWidget(widget: Widget) {
         let pos = this.errorWidgets.findIndex(v => v === widget);
         if (pos < 0) this.errorWidgets.push(widget);
     }
-    removeErrorWidget(widget:Widget) {
+    removeErrorWidget(widget: Widget) {
         let pos = this.errorWidgets.findIndex(v => v === widget);
         if (pos >= 0) this.errorWidgets.splice(pos, 1);
     }
 
-    protected checkHasError():boolean {
+    protected checkHasError(): boolean {
         let ret = (this.errorWidgets.length + this.errors.length) > 0;
         if (ret === true) return true;
         if (this.subContexts === undefined) return false;
@@ -197,7 +197,7 @@ export abstract class Context {
         return false;
     }
 
-    @computed get hasError():boolean {
+    @computed get hasError(): boolean {
         return this.checkHasError();
     };
 
@@ -208,29 +208,29 @@ export abstract class Context {
     }
 
     renderErrors = observer((): JSX.Element => {
-        let {errors} = this;
+        let { errors } = this;
         if (errors.length === 0) return null;
         return <>
-            {errors.map(err => <span key={err} className="text-danger inline-block my-1 ml-3">
+            {errors.map(err => <span key={err} className="text-danger inline-block my-1 ms-3">
                 <i className="fa fa-exclamation-circle" /> &nbsp;{err}
             </span>)}
         </>
     });
 }
 
-let rowKeySeed:number = 1;
+let rowKeySeed: number = 1;
 export class RowContext extends Context {
     readonly parentContext: Context;
     readonly arrSchema: ArrSchema;
     readonly rowKey: number;
-	readonly data: any;
+    readonly data: any;
     //readonly uiSchema: UiArr;
-	
-    constructor(parentContext:Context, arrSchema: ArrSchema, data: any, inNode: boolean) {
-        let uiArr:UiArr;
-        let {uiSchema} = parentContext;
+
+    constructor(parentContext: Context, arrSchema: ArrSchema, data: any, inNode: boolean) {
+        let uiArr: UiArr;
+        let { uiSchema } = parentContext;
         if (uiSchema !== undefined) {
-            let {items} = uiSchema;
+            let { items } = uiSchema;
             if (items !== undefined) uiArr = items[arrSchema.name] as UiArr;
         }
         super(parentContext.form, uiArr, data, inNode, true);
@@ -239,32 +239,32 @@ export class RowContext extends Context {
         this.rowKey = rowKeySeed++;
         this.data = data;
     }
-    getItemSchema(itemName:string):ItemSchema {return this.arrSchema.itemSchemas[itemName]}
-    getUiItem(itemName:string):UiItem {
+    getItemSchema(itemName: string): ItemSchema { return this.arrSchema.itemSchemas[itemName] }
+    getUiItem(itemName: string): UiItem {
         if (this.uiSchema === undefined) return undefined;
-        let {items} = this.uiSchema;
+        let { items } = this.uiSchema;
         if (items === undefined) return undefined;
         return items[itemName]
     }
-    get arrName():string {return this.arrSchema.name}
+    get arrName(): string { return this.arrSchema.name }
     clearErrors() {
         super.clearErrors();
         this.parentContext.clearErrors();
     }
 
-    get parentData():any {return this.parentContext.data;}
+    get parentData(): any { return this.parentContext.data; }
 }
 
 export class FormContext extends Context {
-    constructor(form:Form, inNode:boolean) {
+    constructor(form: Form, inNode: boolean) {
         super(form, form.uiSchema, form.data, inNode, false);
     }
-    get data():any {return this.form.data}
-    getItemSchema(itemName:string):ItemSchema {return this.form.itemSchemas[itemName]}
-    getUiItem(itemName:string):UiItem {
-        let {uiSchema} = this.form;
+    get data(): any { return this.form.data }
+    getItemSchema(itemName: string): ItemSchema { return this.form.itemSchemas[itemName] }
+    getUiItem(itemName: string): UiItem {
+        let { uiSchema } = this.form;
         if (uiSchema === undefined) return undefined;
-        let {items} = uiSchema;
+        let { items } = uiSchema;
         if (items === undefined) return undefined;
         return items[itemName];
     }

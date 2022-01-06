@@ -146,6 +146,7 @@ export class VUnit extends VPage<CHome> {
 
             if (isDev === 1) {
                 if (isOwner > 0) {
+                    /*
                     let appAction: DevItem<DevObjBase> = {
                         dev: true,
                         title: 'APP',
@@ -154,6 +155,7 @@ export class VUnit extends VPage<CHome> {
                         onClick: () => this.controller.startApp(unit), // new AppController(undefined).start(unit.id),
                     };
                     items.push(appAction);
+                    */
                 }
                 let uqAction: DevItem<DevObjBase> = {
                     dev: true,

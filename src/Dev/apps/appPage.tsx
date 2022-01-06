@@ -27,35 +27,35 @@ export class AppPage extends VPage<AppController> {
         }
     }
 
-    private page = observer(():JSX.Element => {
-        let {app, uqs} = this.controller;
+    private page = observer((): JSX.Element => {
+        let { app, uqs } = this.controller;
         //let mainId = mainUq === undefined? 0: mainUq.id;
-        let {unit, name, caption, discription, icon, server, date_init, date_update} = app;
+        let { unit, name, caption, discription, icon, server, date_init, date_update } = app;
         let disp = <div>
             <div>{discription}</div>
             <IdDates date_update={date_update} date_init={date_init} />
         </div>;
         let menuItems = [
             // {icon: 'cogs', caption:'设置关联UQ', action: ()=>nav.push(<AppUqs />)},
-            {caption:'修改App', action:this.editItem, icon:'edit' },
-            {caption:'删除', action:this.deleteItem, icon:'trash-o' }
+            { caption: '修改App', action: this.editItem, icon: 'edit' },
+            { caption: '删除', action: this.deleteItem, icon: 'trash-o' }
         ];
 
-        let right = <DropdownActions actions={menuItems} className="btn-primary mr-2" />;
-        let spanCaption = caption?
+        let right = <DropdownActions actions={menuItems} className="btn-primary me-2" />;
+        let spanCaption = caption ?
             <>{name}: <b>{caption}</b></> :
             <b>{name}</b>;
-        let rows:Prop[] = [
+        let rows: Prop[] = [
             '',
             {
-                type: 'component', 
+                type: 'component',
                 component: <Media icon={icon} main={spanCaption} discription={disp} />
             },
             '',
             {
-                type: 'component', 
-                label: '开发号', 
-                component: <div className="py-2"><UnitSpan id={unit} isLink={true} /></div> 
+                type: 'component',
+                label: '开发号',
+                component: <div className="py-2"><UnitSpan id={unit} isLink={true} /></div>
             },
             /*
             {
@@ -67,7 +67,7 @@ export class AppPage extends VPage<AppController> {
             {
                 label: 'URL',
                 name: 'url',
-                type: 'string',                
+                type: 'string',
             },
             {
                 type: 'component',
@@ -78,31 +78,31 @@ export class AppPage extends VPage<AppController> {
             //this.uqs,
         ];
         let btnAddUq = <button
-            className="btn btn-outline-primary btn-sm" 
-            onClick={()=>this.openVPage(SearchUqPage)}>增加UQ</button>;
+            className="btn btn-outline-primary btn-sm"
+            onClick={() => this.openVPage(SearchUqPage)}>增加UQ</button>;
         //let slaveUqs = uqs.filter(v => v.id !== mainId);
         return <Page header={'App - ' + name} right={right}>
             <PropGrid rows={rows} values={app} />
             <LMR className="mx-3 mt-3 mb-1" right={btnAddUq}>关联UQ</LMR>
-            <List 
-                items={uqs} 
-                item={{render:this.renderUqRow, onClick:this.uqClick}} />
+            <List
+                items={uqs}
+                item={{ render: this.renderUqRow, onClick: this.uqClick }} />
         </Page>
     })
 
-    private uqClick = (uq:DevUQ) => {
+    private uqClick = (uq: DevUQ) => {
         this.controller.onUq(uq);
     }
 
-    private renderUqRow = (uq:DevUQ, index:number):JSX.Element => {
+    private renderUqRow = (uq: DevUQ, index: number): JSX.Element => {
         if (uq === undefined) return null;
-        let {name, discription, unit} = uq;
+        let { name, discription, unit } = uq;
         let right = discription && <div className="small text-muted"> &nbsp; {discription}</div>;
         let isMain = this.controller.isMain(uq);
-        let cn = classNames("px-3 py-2 align-items-center bg-white", isMain===true && "font-weight-bold my-2");
+        let cn = classNames("px-3 py-2 align-items-center bg-white", isMain === true && "font-weight-bold my-2");
         return <LMR className={cn} right={right}>
-            {isMain===true &&  <FA className="text-warning mr-3" name="star-o" />}
-             <UnitName id={unit} /> / {name}
+            {isMain === true && <FA className="text-warning me-3" name="star-o" />}
+            <UnitName id={unit} /> / {name}
         </LMR>
     }
 }

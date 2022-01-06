@@ -8,7 +8,7 @@ import { DevServer } from 'model';
 
 export class CPickServer extends CUqBase {
     pageItems: PageServerItems;
-    
+
     async internalStart() {
         this.pageItems = new PageServerItems();
     }
@@ -19,19 +19,19 @@ export class CPickServer extends CUqBase {
         return await this.vCall(VPickServer);
     }
 
-    onSearch = async (key:string):Promise<void> => {
+    onSearch = async (key: string): Promise<void> => {
         await this.pageItems.first(key);
     }
 }
 
 class PageServerItems extends PageItems<DevServer> {
-    protected async loadResults(param:any, pageStart:any, pageSize:number):Promise<{[name:string]:DevServer[]}> {
+    protected async loadResults(param: any, pageStart: any, pageSize: number): Promise<{ [name: string]: DevServer[] }> {
         let unitId = store.unit.id;
         let ret = await devApi.searchServer(unitId, param, pageStart, pageSize);
-		return {$page: ret};
+        return { $page: ret };
     }
-    protected setPageStart(item:DevServer):void {
-        this.pageStart = item === undefined? 0 : item.id;
+    protected setPageStart(item: DevServer): void {
+        this.pageStart = item === undefined ? 0 : item.id;
     }
 }
 
@@ -40,30 +40,30 @@ class VPickServer extends VPage<CPickServer> {
         this.openPage(this.page);
     }
 
-    private renderServer = (server:DevServer, index:number):JSX.Element => {
+    private renderServer = (server: DevServer, index: number): JSX.Element => {
         return <div className="px-3 py-2"><ServerSpan id={server.id} /></div>;
     }
 
-    private clickServer = (server:DevServer) => {
+    private clickServer = (server: DevServer) => {
         this.closePage();
         this.returnCall(server.id);
-	}
-	
-	private onClickNullServer = () => {
+    }
+
+    private onClickNullServer = () => {
         this.closePage();
         this.returnCall(null);
-	}
+    }
 
-    private page = observer(():JSX.Element => {
+    private page = observer((): JSX.Element => {
         let searchBox = <SearchBox label="选择服务器" onSearch={this.controller.onSearch} />
         return <Page header={searchBox}>
-			<div className="px-3 py-2 cursor-pointer bg-white border-bottom" 
-				onClick={this.onClickNullServer}>
-				<span className="text-danger mr-3">NULL</span>
-				<small className="text-muted">[不选服务器]</small>
-			</div>
+            <div className="px-3 py-2 cursor-pointer bg-white border-bottom"
+                onClick={this.onClickNullServer}>
+                <span className="text-danger me-3">NULL</span>
+                <small className="text-muted">[不选服务器]</small>
+            </div>
             <List items={this.controller.pageItems.items}
-                item={{render:this.renderServer, onClick:this.clickServer}} />
+                item={{ render: this.renderServer, onClick: this.clickServer }} />
         </Page>;
     });
 }

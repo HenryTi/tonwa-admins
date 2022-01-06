@@ -14,22 +14,22 @@ export class VAddUser extends VPage<CUsers> {
         this.openPage(this.page);
     }
 
-    private page = observer(():JSX.Element => {
-        let searchBox = <SearchBox ref={v=>this.searchBox=v}
+    private page = observer((): JSX.Element => {
+        let searchBox = <SearchBox ref={v => this.searchBox = v}
             className="w-100"
             onSearch={this.onSearch}
             onFocus={this.onSearchFocus}
             placeholder="用户全名/手机号/邮箱"
-             />;
-        let content:any;
+        />;
+        let content: any;
         if (this.user === null) {
         }
         else if (this.user === undefined) {
             content = <div className="text-info p-3">没有找到用户</div>;
         }
         else {
-            let {name, nick, icon} = this.user;
-            let divUser:any;
+            let { name, nick, icon } = this.user;
+            let divUser: any;
             if (nick) {
                 divUser = <><div><b>{nick}</b></div><div>{name}</div></>;
             }
@@ -39,7 +39,7 @@ export class VAddUser extends VPage<CUsers> {
             content = <div>
                 <div className="m-3 p-3 d-flex bg-white">
                     <Image src={icon} />
-                    <div className="ml-3">{divUser}</div>
+                    <div className="ms-3">{divUser}</div>
                 </div>
                 <div className="d-flex justify-content-center">
                     <button className="btn btn-success text-center" onClick={this.onAddUser}>增加用户</button>
@@ -66,7 +66,7 @@ export class VAddUser extends VPage<CUsers> {
     })
     //{divUserAdded}
 
-    private onSearch = async (key:string) => {
+    private onSearch = async (key: string) => {
         this.user = await mainApi.userFromKey(key);
     }
 
@@ -101,7 +101,7 @@ export class VAddUser extends VPage<CUsers> {
                     新增用户: {this.controller.curUser.name}
                 </div>
                 <div className="mt-3">
-                    <button className="btn btn-success mr-3" 
+                    <button className="btn btn-success me-3"
                         onClick={this.onAddApps}>
                         为用户添加App
                     </button>

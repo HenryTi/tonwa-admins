@@ -28,10 +28,10 @@ export class UqBindPage extends VPage<AppController> {
         this.closePage();
     }
 
-    private page = ():JSX.Element => {
+    private page = (): JSX.Element => {
         //let {uq/*, bind_access*/} = this.uqAccess;
-        let {owner, name, discription} = this.uq;
-        let btnLeft:any, btnRight:any;
+        let { owner, name, discription } = this.uq;
+        let btnLeft: any, btnRight: any;
         if (this.controller.isBinded(this.uq) === true) {
             if (this.controller.isMain(this.uq) === false) {
                 btnLeft = <button className="btn btn-primary btn-sm" onClick={this.setMainUQ}>设为主UQ</button>;
@@ -57,7 +57,7 @@ export class UqBindPage extends VPage<AppController> {
             {
                 this.accesses.map(v => {
                     let checked = this.accessChecked[v];
-                    return <label key={v} className="d-inline-block mr-4">
+                    return <label key={v} className="d-inline-block me-4">
                         <input onChange={this.onCheckChanged}
                             style={{width:'1.1rem', height:'1.1rem'}} 
                             name={v} type="checkbox" defaultChecked={checked} />&nbsp;{v}

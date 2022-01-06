@@ -6,8 +6,8 @@ import { store } from 'store';
 
 export class VHome extends VPage<CHome> {
     async open() {
-        let {isProduction} = this.controller;
-        let {unitAdmins} = store;
+        let { isProduction } = this.controller;
+        let { unitAdmins } = store;
         if (isProduction === false) {
             switch (unitAdmins.length) {
                 default: this.openPage(this.selectUnitPage); return;
@@ -29,15 +29,15 @@ export class VHome extends VPage<CHome> {
     }
 
     private selectUnitPage = () => {
-        let {logout} = this.controller;
-        let {accUnits, devUnits, bothUnits} = store;
-        let item = {render: this.renderUnitAdmin, onClick: this.onClickUnit};
-        let list = (items:UnitAdmin[], label:string) => {
-            return items.length>0 &&
-            <div className="my-3">
-                <div className="px-3 py-1 small text-muted">{label}</div>
-                <List items={items} item={item} />
-            </div>
+        let { logout } = this.controller;
+        let { accUnits, devUnits, bothUnits } = store;
+        let item = { render: this.renderUnitAdmin, onClick: this.onClickUnit };
+        let list = (items: UnitAdmin[], label: string) => {
+            return items.length > 0 &&
+                <div className="my-3">
+                    <div className="px-3 py-1 small text-muted">{label}</div>
+                    <List items={items} item={item} />
+                </div>
         }
         return <Page header="同花管理员" logout={logout}>
             {list(accUnits, '小号')}
@@ -46,11 +46,11 @@ export class VHome extends VPage<CHome> {
         </Page>;
         //<List items={this.controller.unitAdmins} 
         //    item={{render: this.renderRow, onClick: this.onRowClick}} />
-}
+    }
 
     private noUnitPage = () => {
-        let {user, logout} = this.controller;
-        let {nick, name} = user;
+        let { user, logout } = this.controller;
+        let { nick, name } = user;
         return <Page header="没有小号" logout={logout}>
             <div className="p-3 small text-info">
                 {nick || name}: 没有需要管理的小号
@@ -58,11 +58,11 @@ export class VHome extends VPage<CHome> {
         </Page>
     }
 
-    protected get view():any {return undefined}
+    protected get view(): any { return undefined }
 
-    private renderUnitAdmin = (item: UnitAdmin, index: number):JSX.Element => {
-        let {name, nick, type} = item;
-        let icon:string, color:string;
+    private renderUnitAdmin = (item: UnitAdmin, index: number): JSX.Element => {
+        let { name, nick, type } = item;
+        let icon: string, color: string;
         if (type & 1) {
             icon = 'code';
             color = 'text-success';
@@ -77,7 +77,7 @@ export class VHome extends VPage<CHome> {
         }
         return <LMR className="px-3 py-2" right={<span className="small text-muted">id: {item.id}</span>}>
             <div>
-                <FA name={icon} fixWidth={true} className={classNames('mr-3', color)} />
+                <FA name={icon} fixWidth={true} className={classNames('me-3', color)} />
                 {nick || name}
             </div>
         </LMR>;

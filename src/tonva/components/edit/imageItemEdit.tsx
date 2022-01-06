@@ -7,13 +7,13 @@ import { nav } from '../nav';
 import { ItemEdit } from './itemEdit';
 
 export class ImageItemEdit extends ItemEdit {
-    get uiItem(): UiImageItem {return this._uiItem as UiImageItem}
+    get uiItem(): UiImageItem { return this._uiItem as UiImageItem }
     @observable private resId: string;
 
-    protected async internalStart():Promise<any> {
+    protected async internalStart(): Promise<any> {
         this.resId = this.value;
         return new Promise<any>((resolve, reject) => {
-            nav.push(React.createElement(this.page, {resolve:resolve, reject:reject}), ()=>reject());
+            nav.push(React.createElement(this.page, { resolve: resolve, reject: reject }), () => reject());
         });
     }
 
@@ -31,9 +31,9 @@ export class ImageItemEdit extends ItemEdit {
     }
     */
 
-    private page = observer((props:{resolve:(value:any)=>void, reject: (resean?:any)=>void}):JSX.Element => {
-        let {resolve} = props;
-        let size:any = this.uiItem && this.uiItem.size;
+    private page = observer((props: { resolve: (value: any) => void, reject: (resean?: any) => void }): JSX.Element => {
+        let { resolve } = props;
+        let size: any = this.uiItem && this.uiItem.size;
 
         /*
         let right = <button
@@ -47,11 +47,11 @@ export class ImageItemEdit extends ItemEdit {
             </div>;
         }
         */
-        return <ImageUploader 
+        return <ImageUploader
             label={'更改' + this.label}
             id={this.resId}
             size={size}
-            onSaved={(resId):Promise<void>=>{resolve(resId); return;}} />;
+            onSaved={(resId): Promise<void> => { resolve(resId); return; }} />;
         /*
         return <Page header={'更改' + this.label} right={right}>
             <div className="my-3 px-3 py-3 bg-white">
@@ -67,7 +67,7 @@ export class ImageItemEdit extends ItemEdit {
                 {overSize}
                 <div className="small muted my-4">支持JPG、GIF、PNG格式图片，不超过2M。</div>
                 <div className="d-flex">
-                    <div className="w-12c h-12c mr-4"
+                    <div className="w-12c h-12c me-4"
                         style={{border: '1px dotted gray', padding: '8px'}}>
                         <Image className="w-100 h-100" src={this.resId} />
                     </div>
