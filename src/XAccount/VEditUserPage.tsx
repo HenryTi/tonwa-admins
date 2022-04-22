@@ -49,7 +49,7 @@ export class VEditUserPage extends VPage<CAppXAccount> {
         let { isAdmin, roleBins } = this.user;
         let header = <>用户 -&nbsp;<UserSpan id={this.user.id} /></>;
         let btnDel = this.user.id !== this.controller.user.id
-            && <div className="text-right m-3"><button onClick={this.onDelUer}
+            && <div className="text-end m-3"><button onClick={this.onDelUer}
                 className="btn btn-sm btn-outline-primary"
             ><FA name="trash" /> 从App中移除</button>
             </div>;

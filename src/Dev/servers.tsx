@@ -12,7 +12,7 @@ class Info extends React.Component<DevServer> {
             <div><b>{name}</b></div>
             <div>{discription}</div>
         </div>;
-        let right = <div className="text-right small text-muted align-self-end">
+        let right = <div className="text-end small text-muted align-self-end">
             更新:<EasyTime date={date_update} /><br />
             创建:<EasyDate date={date_init} />
         </div>;

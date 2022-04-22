@@ -355,7 +355,7 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
                                 </div>
                         }
                         right={this.desImage &&
-                            <button className="btn btn-link btn-sm text-right mb-3" onClick={this.showOrgImage}>
+                            <button className="btn btn-link btn-sm text-end mb-3" onClick={this.showOrgImage}>
                                 原图大小: {formatSize(this.file.size)}<br />
                                 分辨率：{this.srcImgWidth} x {this.srcImgHeight}
                             </button>

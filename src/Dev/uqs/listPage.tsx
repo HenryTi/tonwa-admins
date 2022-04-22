@@ -37,7 +37,7 @@ export class ListPage extends VPage<CUq> {
         let { name, discription, service_count, date_update } = item;
         return <LMR className="py-1 px-3 align-items-center"
             left={<FA name="database" className="text-primary fa-lg" />}
-            right={<div className="text-right">
+            right={<div className="text-end">
                 <div><small className="text-muted">服务数:</small> {service_count}</div>
                 <div className="small text-muted"><EasyTime date={date_update} /></div>
             </div>}>
@@ -56,7 +56,7 @@ export class ListPage extends VPage<CUq> {
         let { name, discription, date_update } = item;
         return <LMR className="py-1 px-3 align-items-center"
             left={<FA name="database" className="text-info fa-lg" />}
-            right={<div className="text-right">
+            right={<div className="text-end">
                 <div className="small text-muted"><EasyTime date={date_update} /></div>
             </div>}>
             <div className="py-2 px-3">

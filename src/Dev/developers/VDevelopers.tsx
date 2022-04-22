@@ -19,7 +19,7 @@ export class VDevelopers extends VPage<CDevelopers> {
             let { name, nick, icon } = userObj;
             content = <LMR className="w-100"
                 left={<Image className="w-3c h-3c me-4" src={icon} />}
-                right={<div className="text-right">uq: {uqs.length}<br />bus: {buses.length}</div>}>
+                right={<div className="text-end">uq: {uqs.length}<br />bus: {buses.length}</div>}>
                 <div>{nick ? <><b>{nick}</b><br /><small className="text-muted">{name}</small></> : <><b>{name}</b></>}</div>
             </LMR>
         }
