@@ -7,7 +7,8 @@ import { store } from 'store';
 export class VHome extends VPage<CHome> {
     async open() {
         let { isProduction } = this.controller;
-        let { unitAdmins } = store;
+        let s = store;
+        let { unitAdmins, unit } = s;
         if (isProduction === false) {
             switch (unitAdmins.length) {
                 default: this.openPage(this.selectUnitPage); return;
@@ -16,7 +17,7 @@ export class VHome extends VPage<CHome> {
             }
         }
 
-        if (store.unit === undefined) {
+        if (unit === undefined) {
             this.openPage(this.noUnitPage);
             return;
         }

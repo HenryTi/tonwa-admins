@@ -4,6 +4,7 @@ import { List, EasyDate, LMR, Muted } from 'tonva';
 import { store } from '../../store';
 import { UqActionProps } from './uqActionProps';
 import { CompileResultPage } from './compileResultPage';
+import { ButtonAsync } from 'components';
 
 interface State {
     files: any[];
@@ -77,10 +78,12 @@ export class UqUpload extends React.Component<UqActionProps, State> {
         let url = store.uqServer + 'uq-compile/' + this.props.uq.id + '/upload';
         try {
             let abortController = new AbortController();
+
             let res = await fetch(url, {
                 method: "POST",
                 body: data,
                 signal: abortController.signal,
+                headers: buildHeaders()
             });
             nav.push(<CompileResultPage {...this.props}
                 actionName="上传"
@@ -181,7 +184,8 @@ export class UqDeploy extends React.Component<UqActionProps> {
         }
     }
 
-    private onCompile = async () => {
+    private onCompile = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.disabled = true;
         nav.ceaseTop();
         //let thoroughly = false;
         await this.compile(/*thoroughly*/);
@@ -209,6 +213,7 @@ export class UqDeploy extends React.Component<UqActionProps> {
             let res = await fetch(url, {
                 method: "POST",
                 signal: abortController.signal,
+                headers: buildHeaders(),
             });
             nav.push(<CompileResultPage {...this.props}
                 caption={caption}
@@ -226,18 +231,13 @@ export class UqDeploy extends React.Component<UqActionProps> {
             <div className="bg-white p-3">
                 <ul className="my-3">{description}</ul>
                 <div className="d-flex p-3 justify-content-center">
-                    <button className="btn btn-primary w-8c"
+                    <ButtonAsync className="btn btn-primary w-8c"
                         type="submit" onClick={this.onCompile}>
                         {compile}
-                    </button>
+                    </ButtonAsync>
                 </div>
             </div>
         </Page>;
-        /*
-                    <div className="py-2 flex-grow-1" />
-                    <button className="btn btn-outline-warning"
-                        type="submit" onClick={this.onCompileThoroughly}>{thoroughly}</button>
-        */
     }
 }
 
@@ -251,4 +251,11 @@ class UqPage extends React.Component<UqPgeProps> {
             <pre className="px-3 py-2">{this.props.content}</pre>
         </Page>;
     }
+}
+
+
+function buildHeaders(): { [name: string]: string } {
+    let headers: { [name: string]: string } = {};
+    headers['user-token'] = nav.userToken;
+    return headers;
 }
