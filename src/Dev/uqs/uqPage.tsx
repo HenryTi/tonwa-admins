@@ -25,7 +25,7 @@ export class UQPage extends VPage<CUq> {
     }
 
     private page = observer((): JSX.Element => {
-        let { onUqUpload, onUqTest, onUqDeploy, onUqDevsAdmin, serviceClick, uq, services } = this.controller;
+        let { onUqUpload, onUqTest, onUqDeploy, onShowSource, onUqDevsAdmin, serviceClick, uq, services } = this.controller;
         let { unit } = store;
         let { isOwner } = unit;
         let { name, discription, unit: unitId, date_init, date_update } = uq;
@@ -63,9 +63,10 @@ export class UQPage extends VPage<CUq> {
                 component: <div className="py-2"><UnitSpan id={unitId} isLink={true} /></div>
             },
             '',
-            action('code', 'text-info', '上传提交UQ代码', onUqUpload),
+            action('code', 'text-info', '上传UQ源代码', onUqUpload),
             action('database', 'text-warning', '测试版 - 编译UQ数据库', onUqTest),
             action('database', 'text-success', '发布版 - 编译UQ数据库', onUqDeploy),
+            action('code', 'text-info', '查看UQ源代码', onShowSource),
         ];
 
         let adminDev: any;

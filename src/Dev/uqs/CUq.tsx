@@ -13,6 +13,7 @@ import { CUqBase } from 'UqApp';
 import { CPickServer } from './CPickServer';
 import { Admins } from 'store/admins';
 import { CPickUnit } from './CPickUnit';
+import { UqSource } from './uqSource';
 
 export class CUq extends CUqBase {
     private unit: Unit;
@@ -23,13 +24,13 @@ export class CUq extends CUqBase {
     @observable uqDevs: any[];
     @observable uqList: DevUQ[];
     @observable services: DevService[];
-    protected async internalStart(unit:Unit) {
+    protected async internalStart(unit: Unit) {
         this.unit = unit;
         this.uqList = await devApi.uqs(this.unit.id, 200);
         this.openVPage(ListPage);
     }
 
-    listRowClick = async (item:DevUQ) => {
+    listRowClick = async (item: DevUQ) => {
         this.uq = item;
         await this.loadUqEntities(item.id);
         this.openVPage(UQPage);
@@ -49,7 +50,7 @@ export class CUq extends CUqBase {
         await this.admins.load();
     }
 
-    async devChanged(admin:any, isSelected:boolean) {
+    async devChanged(admin: any, isSelected: boolean) {
         let param = {
             unit: this.unit.id,
             type: 'uq',
@@ -81,19 +82,25 @@ export class CUq extends CUqBase {
         this.openVPage(ServicePage, service);
     }
 
-    onUqUpload = async() => {
-        let onDispose = () => {}
+    onUqUpload = async () => {
+        let onDispose = () => { }
         nav.push(<UqUpload uq={this.uq} services={this.services} />, onDispose);
     }
 
-    onUqTest = async() => {
-        let onDispose = () => {}
+    onUqTest = async () => {
+        let onDispose = () => { }
         nav.push(<UqDeploy uq={this.uq} action="test" services={this.services} />, onDispose);
     }
 
-    onUqDeploy = async() => {
-        let onDispose = () => {}
+    onUqDeploy = async () => {
+        let onDispose = () => { }
         nav.push(<UqDeploy uq={this.uq} action="deploy" services={this.services} />, onDispose);
+    }
+
+    onShowSource = async () => {
+        let onDispose = () => { };
+        let source = await devApi.uqSource(this.uq.id);
+        nav.push(<UqSource uq={this.uq} action="source" services={this.services} source={source} />, onDispose);
     }
 
     saveUq = async (values: DevUQ) => {
@@ -117,11 +124,11 @@ export class CUq extends CUqBase {
         if (index >= 0) this.uqList.splice(index);
     }
 
-    async changeServiceProp(service: DevService, prop:string, value:any):Promise<any> {
+    async changeServiceProp(service: DevService, prop: string, value: any): Promise<any> {
         return await devApi.changeServiceProp(this.unit.id, service.id, prop, value);
     }
 
-    async saveService(service: DevService):Promise<number> {
+    async saveService(service: DevService): Promise<number> {
         let svc = _.clone(service);
         svc.unit = this.unit.id;
         if (!svc.urlTest) svc.urlTest = '-';
