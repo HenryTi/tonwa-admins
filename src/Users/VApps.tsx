@@ -29,7 +29,7 @@ export class VApps extends VPage<CUsers> {
 
     private page = observer(() => {
         let { appUsersList, searchApp, onAppsClick } = this.controller;
-        let searchBox = <SearchBox className="w-100 pr-1"
+        let searchBox = <SearchBox className="w-100 pe-1"
             onSearch={searchApp}
             placeholder="搜索App"
             allowEmptySearch={true} />;

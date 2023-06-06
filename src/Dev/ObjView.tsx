@@ -25,14 +25,17 @@ export class ObjView<T extends DevObjBase> extends React.Component<ObjViewProps<
         nav.push(<Info {...this.props} />);
     }
     render() {
-        let { title, items } = this.props;
+        let { title, items, row } = this.props;
         if (!store.unit) debugger;
         let { isOwner } = store.unit;
+        function RowRender(item: any, index: number) {
+            return row(item);
+        }
         let right = isOwner > 0 && <button className='btn btn-success btn-sm me-2'
             onClick={() => this.newItem()}><FA name="plus" /></button>;
         return <Page header={title} right={right}>
             <List items={items().items}
-                item={{ render: this.props.row, onClick: this.itemClick }}
+                item={{ render: RowRender, onClick: this.itemClick }}
             />
         </Page>;
     }
@@ -45,7 +48,7 @@ class New<T extends DevObjBase> extends React.Component<ObjViewProps<T>> {
         this.onSubmit = this.onSubmit.bind(this);
     }
     async onSubmit(values: any): Promise<SubmitResult> {
-        values.owner = this.props
+        // values.owner = this.props
         if (await this.props.items().check(values) === false) return;
         let ret = await this.props.items().saveCur(values);
         if (ret === true) {

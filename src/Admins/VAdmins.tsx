@@ -101,7 +101,7 @@ export class VAdmins extends VPage<CAdmins> {
             item={{ render: this.row, onSelect: this.onItemSelect }}
         />;
         let cnBtn = 'btn btn-sm btn-outline-info me-1';
-        let buttons = admins.admins.length > 0 && <div className="pl-3">
+        let buttons = admins.admins.length > 0 && <div className="ps-3">
             <button className={cnBtn} onClick={this.onSelectAll}>全选</button>
             <button className={cnBtn} onClick={this.onClearAll}>全清</button>
             <button className={cnBtn} disabled={this.disableDel} onClick={this.onDel}>移除</button>

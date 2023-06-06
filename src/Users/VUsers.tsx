@@ -33,7 +33,7 @@ export class VUsers extends VPage<CUsers> {
 
     private page = observer(() => {
         let { userAppsList, searchUser, onUsersClick } = this.controller;
-        let searchBox = <SearchBox className="w-100 pr-1" label="App管理员 &nbsp; "
+        let searchBox = <SearchBox className="w-100 pe-1" label="App管理员 &nbsp; "
             onSearch={searchUser}
             placeholder="搜索管理员"
             allowEmptySearch={true} />;

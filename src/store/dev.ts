@@ -39,6 +39,7 @@ export abstract class ObjItems<T extends DevObjBase> {
         }
 
         values.unit = item.unit = this.store.unit.id;
+        values.mine = 1;
         let id = await this._save(values);
         if (this.cur === undefined) {
             if (id === 0) return false;
