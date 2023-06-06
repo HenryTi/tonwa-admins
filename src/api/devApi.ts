@@ -1,5 +1,7 @@
 import { CenterApiBase } from 'tonva';
 
+const PageSize = 50;
+
 class DevApi extends CenterApiBase {
     async userAppUnits(app: number): Promise<any[]> {
         return await this.get('tie/user-app-units', { app: app });
@@ -29,22 +31,22 @@ class DevApi extends CenterApiBase {
     async server(id: number): Promise<any> {
         return await this.get('server', { id: id });
     }
-    async apps(unit: number, pageSize: number = 30): Promise<any[]> {
+    async apps(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('apps', { unit: unit, pageSize: pageSize });
     }
-    async uqs(unit: number, pageSize: number = 30): Promise<any[]> {
+    async uqs(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('uqs', { unit, pageSize });
     }
-    async unitUQs(unit: number, pageSize: number = 30): Promise<any[]> {
+    async unitUQs(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('unit-uqs', { unit, pageSize });
     }
-    async buses(unit: number, pageSize: number = 30): Promise<any[]> {
+    async buses(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('buses', { unit: unit, pageSize: pageSize });
     }
-    async servers(unit: number, pageSize: number = 30): Promise<any[]> {
+    async servers(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('servers', { unit: unit, pageSize: pageSize });
     }
-    async services(unit: number, pageSize: number = 30): Promise<any[]> {
+    async services(unit: number, pageSize: number = PageSize): Promise<any[]> {
         return await this.get('services', { unit: unit, pageSize: pageSize });
     }
     async saveApp(values: any): Promise<number> {
