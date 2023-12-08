@@ -19,7 +19,7 @@ import { Entity } from './entity';
 export type FieldType = 'id' | 'tinyint' | 'smallint' | 'int' | 'bigint' | 'dec' | 'char' | 'text'
     | 'datetime' | 'date' | 'time' | 'timestamp';
 
-export function fieldDefaultValue(type:FieldType) {
+export function fieldDefaultValue(type: FieldType) {
     switch (type) {
         case 'tinyint':
         case 'smallint':
@@ -55,11 +55,11 @@ export interface ArrFields {
     order?: string;
 }
 export interface FieldMap {
-    [name:string]: Field;
+    [name: string]: Field;
 }
 export interface SchemaFrom {
-    owner:string;
-    uq:string;
+    owner: string;
+    uq: string;
 }
 export interface TuidModify {
     max: number;
@@ -67,21 +67,21 @@ export interface TuidModify {
 }
 
 export class UqMan {
-	private readonly enums: {[name:string]: UqEnum} = {};
-    private readonly actions: {[name:string]: Action} = {};
-    private readonly sheets: {[name:string]: Sheet} = {};
-    private readonly queries: {[name:string]: Query} = {};
-    private readonly books: {[name:string]: Book} = {};
-    private readonly maps: {[name:string]: Map} = {};
-    private readonly histories: {[name:string]: History} = {};
-	private readonly pendings: {[name:string]: Pending} = {};
-	private readonly tags: {[name:string]: Tag} = {};
+    private readonly enums: { [name: string]: UqEnum } = {};
+    private readonly actions: { [name: string]: Action } = {};
+    private readonly sheets: { [name: string]: Sheet } = {};
+    private readonly queries: { [name: string]: Query } = {};
+    private readonly books: { [name: string]: Book } = {};
+    private readonly maps: { [name: string]: Map } = {};
+    private readonly histories: { [name: string]: History } = {};
+    private readonly pendings: { [name: string]: Pending } = {};
+    private readonly tags: { [name: string]: Tag } = {};
     private readonly tuidsCache: TuidsCache;
     private readonly localAccess: LocalCache;
-    private readonly tvs:{[entity:string]:(values:any)=>JSX.Element};
+    private readonly tvs: { [entity: string]: (values: any) => JSX.Element };
     readonly localMap: LocalMap;
     readonly localModifyMax: LocalCache;
-    readonly tuids: {[name:string]: Tuid} = {};
+    readonly tuids: { [name: string]: Tuid } = {};
     readonly createBoxId: CreateBoxId;
     readonly newVersion: boolean;
     readonly uqOwner: string;
@@ -92,13 +92,13 @@ export class UqMan {
 
     uqVersion: number;
 
-    constructor(uqs:UQsMan, uqData: UqData, createBoxId:CreateBoxId, tvs:{[entity:string]:(values:any)=>JSX.Element}) {
+    constructor(uqs: UQsMan, uqData: UqData, createBoxId: CreateBoxId, tvs: { [entity: string]: (values: any) => JSX.Element }) {
         this.createBoxId = createBoxId;
         if (createBoxId === undefined) {
             this.createBoxId = this.createBoxIdFromTVs;
             this.tvs = tvs || {};
         }
-        let {id, uqOwner, uqName, access, newVersion} = uqData;
+        let { id, uqOwner, uqName, access, newVersion } = uqData;
         this.newVersion = newVersion;
         this.uqOwner = uqOwner;
         this.uqName = uqName;
@@ -124,22 +124,22 @@ export class UqMan {
             this.uqApi = new UnitxApi(appInFrame.unit);
         }
         else {
-            let {appOwner, appName} = uqs;
+            let { appOwner, appName } = uqs;
             this.uqApi = new UqApi(baseUrl, appOwner, appName, uqOwner, uqName, acc, true);
         }
         this.tuidsCache = new TuidsCache(this);
     }
 
     get entities() {
-        return _.merge({}, 
+        return _.merge({},
             this.actions, this.sheets, this.queries, this.books,
-			this.maps, this.histories, this.pendings, this.tuids,
-			this.tags,
+            this.maps, this.histories, this.pendings, this.tuids,
+            this.tags,
         );
     }
 
-    private createBoxIdFromTVs:CreateBoxId = (tuid:Tuid, id:number):BoxId =>{
-        let {name} = tuid;
+    private createBoxIdFromTVs: CreateBoxId = (tuid: Tuid, id: number): BoxId => {
+        let { name } = tuid;
         /*
         let tuidUR = this.tuidURs[name];
         if (tuidUR === undefined) {
@@ -150,20 +150,20 @@ export class UqMan {
         return new ReactBoxId(id, tuid, this.tvs[name]);
     }
 
-    tuid(name:string):Tuid {return this.tuids[name.toLowerCase()]}
-    tuidDiv(name:string, div:string):TuidDiv {
+    tuid(name: string): Tuid { return this.tuids[name.toLowerCase()] }
+    tuidDiv(name: string, div: string): TuidDiv {
         let tuid = this.tuids[name.toLowerCase()]
         return tuid && tuid.div(div.toLowerCase());
     }
-    action(name:string):Action {return this.actions[name.toLowerCase()]}
-    sheet(name:string):Sheet {return this.sheets[name.toLowerCase()]}
-    query(name:string):Query {return this.queries[name.toLowerCase()]}
-    book(name:string):Book {return this.books[name.toLowerCase()]}
-    map(name:string):Map {return this.maps[name.toLowerCase()]}
-    history(name:string):History {return this.histories[name.toLowerCase()]}
-    pending(name:string):Pending {return this.pendings[name.toLowerCase()]}
+    action(name: string): Action { return this.actions[name.toLowerCase()] }
+    sheet(name: string): Sheet { return this.sheets[name.toLowerCase()] }
+    query(name: string): Query { return this.queries[name.toLowerCase()] }
+    book(name: string): Book { return this.books[name.toLowerCase()] }
+    map(name: string): Map { return this.maps[name.toLowerCase()] }
+    history(name: string): History { return this.histories[name.toLowerCase()] }
+    pending(name: string): Pending { return this.pendings[name.toLowerCase()] }
 
-    sheetFromTypeId(typeId:number):Sheet {
+    sheetFromTypeId(typeId: number): Sheet {
         for (let i in this.sheets) {
             let sheet = this.sheets[i];
             if (sheet.typeId === typeId) return sheet;
@@ -195,25 +195,25 @@ export class UqMan {
             this.buildEntities(accesses);
         }
         catch (err) {
-            return err;
+            return err as any;
         }
     }
 
-	buildEntities(entities:any) {
+    buildEntities(entities: any) {
         if (entities === undefined) {
             debugger;
         }
         this.localAccess.set(entities);
-        let {access, tuids, version} = entities;
+        let { access, tuids, version } = entities;
         this.uqVersion = version;
         this.buildTuids(tuids);
         this.buildAccess(access);
-	}
-	
-    private buildTuids(tuids:any) {
+    }
+
+    private buildTuids(tuids: any) {
         for (let i in tuids) {
             let schema = tuids[i];
-            let {typeId, from} = schema;
+            let { typeId, from } = schema;
             let tuid = this.newTuid(i, typeId, from);
             tuid.sys = true;
         }
@@ -226,41 +226,41 @@ export class UqMan {
             let tuid = this.tuids[i];
             tuid.buildFieldsTuid();
         }
-	}
+    }
 
     async loadEntitySchema(entityName: string): Promise<any> {
         return await this.uqApi.schema(entityName);
     }
 
-	async loadAllSchemas():Promise<void> {
-		let ret = await this.uqApi.allSchemas();
-		let entities: Entity[][] = [
-			this.actionArr, 
-			this.enumArr,
-			this.sheetArr,
-			this.queryArr,
-			this.bookArr,
-			this.mapArr,
-			this.historyArr,
-			this.pendingArr,
-			this.tagArr,
-		];
-		entities.forEach(arr => {
-			arr.forEach(v => {
-				let entity = ret[v.name.toLowerCase()];
-				if (!entity) return;
-				let schema = entity.call;
-				if (!schema) return;
-				v.buildSchema(schema);
-			});
-		});
-	}
+    async loadAllSchemas(): Promise<void> {
+        let ret = await this.uqApi.allSchemas();
+        let entities: Entity[][] = [
+            this.actionArr,
+            this.enumArr,
+            this.sheetArr,
+            this.queryArr,
+            this.bookArr,
+            this.mapArr,
+            this.historyArr,
+            this.pendingArr,
+            this.tagArr,
+        ];
+        entities.forEach(arr => {
+            arr.forEach(v => {
+                let entity = ret[v.name.toLowerCase()];
+                if (!entity) return;
+                let schema = entity.call;
+                if (!schema) return;
+                v.buildSchema(schema);
+            });
+        });
+    }
 
-    getTuid(name:string): Tuid {
+    getTuid(name: string): Tuid {
         return this.tuids[name];
     }
 
-    private buildAccess(access:any) {
+    private buildAccess(access: any) {
         for (let a in access) {
             let v = access[a];
             switch (typeof v) {
@@ -270,25 +270,25 @@ export class UqMan {
         }
     }
 
-    cacheTuids(defer:number) {
+    cacheTuids(defer: number) {
         this.tuidsCache.cacheTuids(defer);
     }
 
-    newEnum(name:string, id:number):UqEnum {
+    newEnum(name: string, id: number): UqEnum {
         let enm = this.enums[name];
         if (enm !== undefined) return enm;
         enm = this.enums[name] = new UqEnum(this, name, id)
         this.enumArr.push(enm);
         return enm;
     }
-	newAction(name:string, id:number):Action {
+    newAction(name: string, id: number): Action {
         let action = this.actions[name];
         if (action !== undefined) return action;
         action = this.actions[name] = new Action(this, name, id)
         this.actionArr.push(action);
         return action;
     }
-    private newTuid(name:string, id:number, from:SchemaFrom):Tuid {
+    private newTuid(name: string, id: number, from: SchemaFrom): Tuid {
         let tuid = this.tuids[name];
         if (tuid !== undefined) return tuid;
         if (from !== undefined)
@@ -299,56 +299,56 @@ export class UqMan {
         this.tuidArr.push(tuid);
         return tuid;
     }
-    newQuery(name:string, id:number):Query {
+    newQuery(name: string, id: number): Query {
         let query = this.queries[name];
         if (query !== undefined) return query;
         query = this.queries[name] = new Query(this, name, id)
         this.queryArr.push(query);
         return query;
     }
-    private newBook(name:string, id:number):Book {
+    private newBook(name: string, id: number): Book {
         let book = this.books[name];
         if (book !== undefined) return book;
         book = this.books[name] = new Book(this, name, id);
         this.bookArr.push(book);
         return book;
     }
-    private newMap(name:string, id:number):Map {
+    private newMap(name: string, id: number): Map {
         let map = this.maps[name];
         if (map !== undefined) return map;
         map = this.maps[name] = new Map(this, name, id)
         this.mapArr.push(map);
         return map;
     }
-    private newTag(name:string, id:number):Tag {
+    private newTag(name: string, id: number): Tag {
         let tag = this.tags[name];
         if (tag !== undefined) return tag;
         tag = this.tags[name] = new Tag(this, name, id)
         this.tagArr.push(tag);
         return tag;
     }
-    private newHistory(name:string, id:number):History {
+    private newHistory(name: string, id: number): History {
         let history = this.histories[name];
         if (history !== undefined) return;
         history = this.histories[name] = new History(this, name, id)
         this.historyArr.push(history);
         return history;
     }
-    private newPending(name:string, id:number):Pending {
+    private newPending(name: string, id: number): Pending {
         let pending = this.pendings[name];
         if (pending !== undefined) return;
         pending = this.pendings[name] = new Pending(this, name, id)
         this.pendingArr.push(pending);
         return pending;
     }
-    newSheet(name:string, id:number):Sheet {
+    newSheet(name: string, id: number): Sheet {
         let sheet = this.sheets[name];
         if (sheet !== undefined) return sheet;
         sheet = this.sheets[name] = new Sheet(this, name, id);
         this.sheetArr.push(sheet);
         return sheet;
     }
-    private fromType(name:string, type:string) {
+    private fromType(name: string, type: string) {
         let parts = type.split('|');
         type = parts[0];
         let id = Number(parts[1]);
@@ -364,33 +364,33 @@ export class UqMan {
             case 'book': this.newBook(name, id); break;
             case 'map': this.newMap(name, id); break;
             case 'history': this.newHistory(name, id); break;
-            case 'sheet':this.newSheet(name, id); break;
-			case 'pending': this.newPending(name, id); break;
-			case 'tag': this.newTag(name, id); break;
-			case 'enum': this.newEnum(name, id); break;
+            case 'sheet': this.newSheet(name, id); break;
+            case 'pending': this.newPending(name, id); break;
+            case 'tag': this.newTag(name, id); break;
+            case 'enum': this.newEnum(name, id); break;
         }
     }
-    private fromObj(name:string, obj:any) {
+    private fromObj(name: string, obj: any) {
         switch (obj['$']) {
             case 'sheet': this.buildSheet(name, obj); break;
         }
     }
-    private buildSheet(name:string, obj:any) {
+    private buildSheet(name: string, obj: any) {
         let sheet = this.sheets[name];
         if (sheet === undefined) sheet = this.newSheet(name, obj.id);
         sheet.build(obj);
     }
-    buildFieldTuid(fields:Field[], mainFields?:Field[]) {
+    buildFieldTuid(fields: Field[], mainFields?: Field[]) {
         if (fields === undefined) return;
         for (let f of fields) {
-            let {tuid} = f;
+            let { tuid } = f;
             if (tuid === undefined) continue;
             let t = this.getTuid(tuid);
             if (t === undefined) continue;
             f._tuid = t.buildTuidBox();
         }
         for (let f of fields) {
-            let {owner} = f;
+            let { owner } = f;
             if (owner === undefined) continue;
             let ownerField = fields.find(v => v.name === owner);
             if (ownerField === undefined) {
@@ -402,7 +402,7 @@ export class UqMan {
                     throw new Error(`owner field ${owner} is undefined`);
                 }
             }
-            let {arr, tuid} = f;
+            let { arr, tuid } = f;
             let t = this.getTuid(ownerField._tuid.tuid.name);
             if (t === undefined) continue;
             let div = t.div(arr || tuid);
@@ -413,16 +413,16 @@ export class UqMan {
             }
         }
     }
-    buildArrFieldsTuid(arrFields:ArrFields[], mainFields:Field[]) {
+    buildArrFieldsTuid(arrFields: ArrFields[], mainFields: Field[]) {
         if (arrFields === undefined) return;
         for (let af of arrFields) {
-            let {fields} = af;
+            let { fields } = af;
             if (fields === undefined) continue;
             this.buildFieldTuid(fields, mainFields);
         }
     }
 
-    pullModify(modifyMax:number) {
+    pullModify(modifyMax: number) {
         this.tuidsCache.pullModify(modifyMax);
     }
 }

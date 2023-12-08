@@ -11,4 +11,4 @@ export * from './pending';
 export * from './uqsMan';
 export * from './tag/tag';
 export * from './enum';
-export * from './buildUqApp';
+//export * from './buildUqApp';

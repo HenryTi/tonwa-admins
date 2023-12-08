@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import { isNumber } from 'util';
+// import { isNumber } from 'util';
 import _ from 'lodash';
 import { LocalArr } from '../../tool';
 import { BoxId } from './boxId';
@@ -9,10 +9,10 @@ const maxCacheSize = 1000;
 
 export class IdCache {
     private queue: number[] = [];               // 每次使用，都排到队头
-	private cache = observable.map({}, {deep: false});    // 已经缓冲的
-	private loading:boolean = false;
+    private cache = observable.map({}, { deep: false });    // 已经缓冲的
+    private loading: boolean = false;
 
-    protected localArr:LocalArr;
+    protected localArr: LocalArr;
     protected waitingIds: number[] = [];          // 等待loading的
     protected tuidInner: TuidInner;
 
@@ -25,14 +25,14 @@ export class IdCache {
         this.localArr = this.tuidInner.cache.arr(this.tuidInner.name + '.ids');
     }
 
-    useId(id:number, defer?:boolean) {
+    useId(id: number, defer?: boolean) {
         if (!id) return;
-        if (isNumber(id) === false) return;
+        if (Number.isInteger(id) === false) return;
         if (this.cache.has(id) === true) {
             this.moveToHead(id);
             return;
         }
-        this.tuidInner.cacheTuids(defer===true?70:20);
+        this.tuidInner.cacheTuids(defer === true ? 70 : 20);
         this.cache.set(id, id);
         if (this.waitingIds.findIndex(v => v === id) >= 0) {
             this.moveToHead(id);
@@ -64,25 +64,25 @@ export class IdCache {
         return;
     }
 
-    private moveToHead(id:number) {
+    private moveToHead(id: number) {
         let index = this.queue.findIndex(v => v === id);
         this.queue.splice(index, 1);
         this.queue.push(id);
     }
 
-    getValue(id:number) {
+    getValue(id: number) {
         return this.cache.get(id);
     }
 
-    remove(id:number) {
+    remove(id: number) {
         this.cache.delete(id);
         let index = this.queue.findIndex(v => v === id);
-		this.queue.splice(index, 1);
-		this.localArr.removeItem(id);
+        this.queue.splice(index, 1);
+        this.localArr.removeItem(id);
     }
 
-    valueFromId(id:number|BoxId):any {
-        let _id:number;
+    valueFromId(id: number | BoxId): any {
+        let _id: number;
         switch (typeof id) {
             case 'object': _id = (id as BoxId).id; break;
             case 'number': _id = id as number; break;
@@ -91,29 +91,29 @@ export class IdCache {
         return this.getValue(_id);
     }
 
-    resetCache(id:number) {
+    resetCache(id: number) {
         this.remove(id);
         this.useId(id);
     }
 
-    cacheValue(val:any):boolean {
+    cacheValue(val: any): boolean {
         if (val === undefined) return false;
         let id = this.getIdFromObj(val);
         if (id === undefined) return false;
         let index = this.waitingIds.findIndex(v => v === id);
-        if (index>=0) this.waitingIds.splice(index, 1);
+        if (index >= 0) this.waitingIds.splice(index, 1);
         this.cache.set(id, val);
         return true;
     }
-    protected getIdFromObj(val:any) {return this.tuidInner.getIdFromObj(val)}
+    protected getIdFromObj(val: any) { return this.tuidInner.getIdFromObj(val) }
 
-    async cacheIds():Promise<void> {
+    async cacheIds(): Promise<void> {
         if (this.waitingIds.length === 0) return;
-		let tuidValues = await this.loadIds();
-		if (tuidValues === undefined || tuidValues.length === 0) {
-			this.waitingIds.splice(0, this.waitingIds.length);
-			return;
-		}
+        let tuidValues = await this.loadIds();
+        if (tuidValues === undefined || tuidValues.length === 0) {
+            this.waitingIds.splice(0, this.waitingIds.length);
+            return;
+        }
         this.cacheIdValues(tuidValues);
     }
 
@@ -125,11 +125,11 @@ export class IdCache {
             this.cacheTuidFieldValues(tuidValue);
         }
     }
-    async modifyIds(ids:any[]):Promise<void> {
-        let tuidValues:string[] = await this.loadTuidIdsOrLocal(ids);
+    async modifyIds(ids: any[]): Promise<void> {
+        let tuidValues: string[] = await this.loadTuidIdsOrLocal(ids);
         let localedValues = tuidValues.filter(v => {
             let p = v.indexOf('\t');
-            if (p<0) p = v.length;
+            if (p < 0) p = v.length;
             let id = Number(v.substr(0, p));
             let val = this.localArr.getItem(id);
             return (val !== undefined);
@@ -137,22 +137,22 @@ export class IdCache {
         if (localedValues.length === 0) return;
         this.cacheIdValues(localedValues);
     }
-    protected divName:string = undefined;
+    protected divName: string = undefined;
     protected async loadIds(): Promise<any[]> {
-		if (this.loading === true) return;
-		this.loading = true;
-		let ret = await this.loadTuidIdsOrLocal(this.waitingIds);
-		this.loading = false;
+        if (this.loading === true) return;
+        this.loading = true;
+        let ret = await this.loadTuidIdsOrLocal(this.waitingIds);
+        this.loading = false;
         return ret;
     }
-    protected unpackTuidIds(values:string[]):any[] {
+    protected unpackTuidIds(values: string[]): any[] {
         return this.tuidInner.unpackTuidIds(values);
     }
     protected cacheTuidFieldValues(tuidValue: any) {
         this.tuidInner.cacheTuidFieldValues(tuidValue);
     }
 
-    async assureObj(id:number):Promise<void> {
+    async assureObj(id: number): Promise<void> {
         let val = this.cache.get(id);
         switch (typeof val) {
             case 'object': return val;
@@ -162,9 +162,9 @@ export class IdCache {
         this.cacheIdValues(ret);
     }
 
-    private async loadTuidIdsOrLocal(ids:number[]):Promise<string[]> {
-        let ret:string[] = [];        
-        let netIds:number[] = [];
+    private async loadTuidIdsOrLocal(ids: number[]): Promise<string[]> {
+        let ret: string[] = [];
+        let netIds: number[] = [];
         for (let id of ids) {
             let value = this.localArr.getItem(id);
             //if (value === undefined)
@@ -177,20 +177,20 @@ export class IdCache {
         let len = netIds.length;
         if (len > 0) {
             let netRet = await this.tuidInner.loadTuidIds(this.divName, netIds);
-            for (let i=0; i<len; i++) {
+            for (let i = 0; i < len; i++) {
                 //有些id可能没有内容，不会返回
                 //let id = netIds[i]; 
-                let row:string = netRet[i];
+                let row: string = netRet[i];
                 if (!row) continue;
                 let p = row.indexOf('\t');
                 if (p < 0) p = row.length;
                 let id = Number(row.substr(0, p));
-				_.remove(netIds, v => v === id);
+                _.remove(netIds, v => v === id);
                 ret.push(row);
                 this.localArr.setItem(id, row);
             }
             len = netIds.length;
-            for (let i=0; i<len; i++) {
+            for (let i = 0; i < len; i++) {
                 this.localArr.setItem(netIds[i], '');
             }
         }
@@ -200,9 +200,9 @@ export class IdCache {
 
 export class IdDivCache extends IdCache {
     private div: TuidDiv;
-    protected divName:string;
+    protected divName: string;
 
-    constructor(tuidLocal:TuidInner, div: TuidDiv) {
+    constructor(tuidLocal: TuidInner, div: TuidDiv) {
         super(tuidLocal);
         this.div = div;
         this.divName = div.name;
@@ -214,8 +214,8 @@ export class IdDivCache extends IdCache {
         // this.localArr = this.tuidInner.cache.arr(this.tuidInner.name + '.ids');
     }
 
-    protected getIdFromObj(val:any) {return this.div.getIdFromObj(val)}
-    protected unpackTuidIds(values:string[]):any[] {
+    protected getIdFromObj(val: any) { return this.div.getIdFromObj(val) }
+    protected unpackTuidIds(values: string[]): any[] {
         return this.div.unpackTuidIds(values);
     }
     protected cacheTuidFieldValues(tuidValue: any) {
